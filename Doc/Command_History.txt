@@ -1,0 +1,93 @@
+// we use class library, web api and solution
+
+// check availaible templates for dot net cli
+dotnet new -h
+
+// create new solution file - file name will be same than the parent folder name
+// its like a container for dotnet application
+dotnet new sln
+
+// create class library with name, this create folder and files into Domain folder
+// ex: Domain.csproj, Class1.cs, obj folder)
+// each project have his own csproj file (obj folder used when project will be built)
+dotnet new classlib -n Domain
+
+dotnet new classlib -n Application
+dotnet new classlib -n Persistence
+
+// we create web api 
+dotnet new webapi -n API
+
+// check the options like: 
+// add <project_path> - add/insert one or more project into solution
+// list - list all projects in a solution file
+// remove <project_path> - remove on or more project from the solution file
+dotnet sln -h
+
+// add Domain project into main solution
+dotnet sln add Domain/
+dotnet sln add Application/
+dotnet sln add Persistence/
+dotnet sln add API/
+
+// we list in terminal which projects was added (ex. first row: Domain/Domain.csproj)
+dotnet sln list
+
+// lets make dependencies, ex. Applicaiton depend on Domain project
+cd Application/
+dotnet add reference ../Domain/
+// Application project must depend also on Persistence project
+dotnet add reference ../Persistence/
+
+// we make Api depend on Application and indirectly this way we depend on Domain too
+cd ..
+cd API/
+dotnet add reference ../Application/
+
+// persistence project also depend on domain project
+cd ..
+cd Persistence
+dotnet add reference ../Domain/
+
+// Note 1: -csproj files
+// csproj file contain:
+// - the required dotnet version (ex. netstandard2.0 or netcoreapp3.1)
+// - project reference dependencies
+// - on which was built (ex. <Project Sdk="Microsoft.NET.Sdk"> or <Project Sdk="Microsoft.NET.Sdk.Web">)
+
+
+// Note 2: - VSC exclude
+// in visual studio code we should add the bin/obj folders into exclude 
+// File/Preferences/Settings/exclude (in searchbar) and add **/bin and **/obj
+
+// Note 3: - Program.cs
+// API/Program.cs - Main handle the web api part with the routes 
+// it will call CreateHostBuilder(args).Build().Run() - IHostBuilder interface
+// - load json files with the configuration
+// - use the kestrel web server
+// - use the StartUp class (it is in same folder, StartUp.cs), we can inject here our configuration
+// - ConfigureServices is the dependency injection container
+// - Configure method is used for configure the HTTP request pipeline, like we can add middlewate (so ordering important here)
+//      - example UseHttpsRedirection should redirect http to https - this should be commented out in our case
+//      - ACTION: comment out UseHttpsRedirection
+//                 - UseRouting is for middleware and UseAuthorization for auth, UseEndPoints is controller endpoints maping
+
+// Note 4: - launchSettings
+// API/Properties/launchSettings.json tell which url use the web api endpoints (http and https)
+// ex. "applicationUrl": "https://localhost:5001;http://localhost:5000",
+// ACTION: we remove our https endpoint
+
+// Note 5: - Controllers
+// by default we got an example controller in API/Controllers/WeatherForecastController.cs
+// ACTION: we delete this controller: API/Controllers/WeatherForecastController.cs and Api/WeatherForecast.cs
+// Action: create new file into API/Controllers - ValuesController.cs and copy pasted a base (base_ctrl.txt)
+// [Route("api/[controller]")] - create a new route and [controller] part replaced with controller name ex. api/values
+// [HttpGet] method decorator and the decorated method will handle the  api/values url request
+// [HttpGet("{id}")] will match the methods like api/values/5 and in method the param name is id
+//          ex: public ActionResult<string> Get(int id) { return "something string"; }
+// return an array of string should be:
+//                 return  new string[] { "value1", "value2" };
+
+// run a specific project, and we should check this in browser: http://localhost:5000/api/values
+dotnet run -p API/
+
