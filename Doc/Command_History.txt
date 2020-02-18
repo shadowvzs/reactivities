@@ -91,3 +91,128 @@ dotnet add reference ../Domain/
 // run a specific project, and we should check this in browser: http://localhost:5000/api/values
 dotnet run -p API/
 
+
+// Note 1: Domain class
+// rename Domain/Class1.cs to Value.cs (rename the class to in the file)
+// file the Value.cs with properties like id and name
+
+// Note 2: Data Context - road to entity framework
+// in Persistence folder we rename the class file and class name to DataContext
+
+// Note 3: Add entity framework
+// ctrl + shift + p in vsc (if nuget package manager plugin is installed) 
+// select nuget add package
+// package name is (both must have same version):
+//   - Microsoft.EntityFrameworkCore.Core
+//   - Microsoft.EntityFrameworkCore.Design
+//   - Microsoft.EntityFrameworkCore.Sqlite
+// select Persistence.csproj
+
+// Note 4: EntityFramework need higher .net dependency
+// change netstandard2.0 in Persistence.csproj to netstandard2.1
+
+// check dependency
+dotnet restore
+
+// this tell to us we need same version (2.1) dependency in Domain.csproj and in Application.csproj too
+
+// check dependency
+dotnet restore
+
+// Note 5: add EFCore into DataContext
+// add "using Microsoft.EntityFrameworkCore;" to DataContext.cs
+// then we start work on this file ( add constructor, db options)
+
+// public DataContext(DbContextOptions options) : base(options) - copnstructor which use the base constructor
+// public DbSet<Value> Values { get; set; }
+//  - Value is entity (also need import with using the project where is the entity like "using Domain;")
+//  - Values - will be table name
+
+// Note 6: Service injection into service container
+// in API/startup.cs - ConfigureServices we must add our DbContext above service.AddControllers();
+//            service.AddDbContext<DataContext>(opt => 
+//            {
+//                // we inject our connection string from the configuration what we have in Startup method
+//                opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+//            });
+// we must import it from the Persistence project and Microsoft.EntityFrameworkCore
+
+// Note 7: Connection string
+// we can specify the ConnectionStrings in API/appsettings.json
+// something like this for Sqlite:
+//    "ConnectionStrings": {
+//        "DefaultConnection": "Data source=reactivities.db"
+//    },
+
+// install dotnet entity framework globally
+dotnet tool install --global dotnet-ef
+// or local install
+dotnet new tool-manifest
+dotnet tool install --local dotnet-ef
+
+// test the installed version
+dotnet ef
+
+// we create a initial migration with name InitialCreate (will be in Persistence/Migrations/20200217202915_InitialCreate.cs)
+// also we must set with -p the dataContext project (Persistence)
+// and the startup project (API/)
+dotnet ef migrations add InitialCreate -p Persistence/ -s API/
+
+// Note 1: table creation rule
+// entity framework is convention base, so if i declared id then that will be automatical primary key with auto increment
+// the table name (we get it from Persistence/DataContext - DbSet) 
+// columns are based on Domain/Value.cs (because we used -p Persistence/ and DataContext is the glue between entities and final table)
+
+// get the entity framework options
+dotnet ef -h
+dotnet ef database -h
+
+// we should update database with: dotnet ef database update
+// but we want make it during every program start so we will add into Program.cs
+
+// Note 1: create scope into method
+// the example below will be cleaned up instantly the main function will be done
+// this will need Microsoft.Extensions.DependencyInjection;
+// using (var scope = host.Services.CreateScope()) { ... }
+
+// Note 2: Create/Update database at project start
+// API/Program.cs we create a new var into Main()  and we can use Run() later
+// var host = CreateHostBuilder(args).Build(); 
+
+// !!! Note 3: watch run and restriction !!!
+// watch run work only if we are in startup project 
+dotnet watch run
+
+// Note 3: Debug Sqlite with vsc (sqlite extension)
+// ctrl+shift+p (view -> command pallette)
+// sqlite -> open database and select database
+// then we will have in left sidepanel a new collapseable grouo - SQLite explorer
+// we can right click to tables - show table
+
+// DataContext.cs overrides
+// this override the base OnModelCreating method and it return void/nothing
+//  protected override void OnModelCreating(ModelBuilder builder)
+
+// this way when we have migration we can insert data into table (value entity is assigned to values table)
+// and we can insert automatically more item into values table when we run with next command
+//        protected override void OnModelCreating(ModelBuilder builder)
+//        {
+//            builder.Entity<Value>()
+//                .HasData(
+//                    new Value { Id = 1, Name = "Value 102" },
+//                    new Value { Id = 2, Name = "Value 202" },
+//                    new Value { Id = 3, Name = "Value 302" },
+//                    new Value { Id = 4, Name = "Value 402" }
+//                );
+//        }
+
+// we create a new migration (20200218164651_SeedValues) and in this one we seed the values into 'values' table
+// note this create insert query's in migration and not add into database
+dotnet ef migrations add SeedValues -p Persistence/ -s API/
+
+// values will be inserted in this point when we start our webapi (API)
+cd API/
+dotnet watch run
+
+
+
