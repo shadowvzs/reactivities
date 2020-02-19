@@ -1,3 +1,7 @@
+using Domain;
+using Persistence;
+using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,18 +14,26 @@ namespace API.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private readonly DataContext _context;
+        public ValuesController(DataContext context)
+        {
+            _context = context;
+        }
+
         // GET api/values/
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<ActionResult<IEnumerable<Value>>> Get()
         {
-            return new string[] {"value1", "value2"};
+            var values = await _context.Values.ToListAsync();
+            return Ok(values);
         }
 
         // GET /api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public async Task<ActionResult<Value>> Get(int id)
         {
-            return "value";
+            var value = await _context.Values.FindAsync(id);
+            return Ok(value);
         }
 
         // POST api/values

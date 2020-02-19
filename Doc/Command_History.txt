@@ -214,5 +214,37 @@ dotnet ef migrations add SeedValues -p Persistence/ -s API/
 cd API/
 dotnet watch run
 
+// NOTE 1: Dependecy injection in controller
+// we make dependency injection in controller too (ValuesController.cs)
+// we create new method with classname and inport Persistence project
+// here we injected our data context and created private property to save it
+//        private readonly DataContext context;
+//        public ValuesController(DataContext context)
+//        {
+//            this.context = context;
+//        }
 
+// NOTE 2: vsc private variable prefix
+// settings -> search private -> prefix private member declarations
 
+// NOTE 3: don't need this in constructor if the property name exist (ex. with underscore)
+//         private readonly DataContext _context;
+//        public ValuesController(DataContext context)
+//        {
+//            _context = context;
+//        }
+
+// NOTE 4: - Return data from Db - Async and Task - ToListAsync() and FindAsync(id)
+// why use async? it doesn't block the code flow,m it will be executed in different thread
+// we convert this in ValuesController.cs
+//        public ActionResult<IEnumerable<string>> Get()
+//        {
+//            return new string[] {"value1", "value2"};
+//        }
+// to this (and ofc include the entity - Value, from Domain project)
+// we wrap the returned type with Task type (similiar like Promise<T> in js)
+//  public ActionResult<IEnumerable<string>> Get() => public async Task<ActionResult<IEnumerable<Value>>> Get()
+// also we need change the sync code to async:
+// var values = _context.Values.ToList(); => var values = await _context.Values.ToListAsync(); // for this we also must import ef core
+// return Ok(values); - return http response with code 200 instead of normal value
+// await _context.Values.FindAsync(id); - FindAsync use the primary key and return null if not exist

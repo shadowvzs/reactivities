@@ -1,0 +1,43 @@
+{
+  "name": "reactivities",
+  "version": "1.0.0",
+  "description": "Frontend for my reactivities fun project.",
+  "main": "index.tsx",
+  "scripts": {
+    "test": "tsc",
+    "dev": "webpack-dev-server --mode development --open",
+    "start": "webpack -p && node server.js",
+    "build": "tsc",
+    "check-types": "tsc",
+    "build1": "webpack",
+    "watch": "webpack -w"
+  },
+  "keywords": [
+    "react",
+    "mobx",
+    "typescript",
+    "semantic-ui"
+  ],
+  "author": "Varga Zsolt",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
+    "@babel/preset-env": "^7.8.4",
+    "@babel/preset-typescript": "^7.8.3",
+    "@types/node": "^13.7.2",
+    "@types/react": "^16.9.20",
+    "@types/react-dom": "^16.9.5",
+    "awesome-typescript-loader": "^5.2.1",
+    "axios": "^0.19.2",
+    "babel-loader": "^8.0.6",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "semantic-ui-react": "^0.88.2",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
+  }
+}
