@@ -149,6 +149,7 @@ dotnet tool install --global dotnet-ef
 // or local install
 dotnet new tool-manifest
 dotnet tool install --local dotnet-ef
+// dotnet tool install --global dotnet-ef --version 3.1.2
 
 // test the installed version
 dotnet ef
@@ -248,3 +249,25 @@ dotnet watch run
 // var values = _context.Values.ToList(); => var values = await _context.Values.ToListAsync(); // for this we also must import ef core
 // return Ok(values); - return http response with code 200 instead of normal value
 // await _context.Values.FindAsync(id); - FindAsync use the primary key and return null if not exist
+
+// NOTE 5. Added Cors support in API/Startup.cs - ConfigureService
+//            services.AddCors(opt =>
+//            {
+//                opt.AddPolicy("CorsPolicy", policy => 
+//                {
+//                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://172.18.0.2:5000");
+//                });
+//            });
+// and this into Configure method
+// app.UseCors("CorsPolicy");
+
+
+// STEP 4
+// Created Domain/Activity.cs - entity and added into DataContext.cs
+// create migration for newly created entity
+dotnet ef migrations add "ActivityEntityAdded" -p Persistence/ -s API/
+
+// created Seed.cs with SeedData method with a different technique to seed data into database 
+// then execute at web api start if no data in table with API/Program.cs - Main - scope where we jave access to context
+
+
