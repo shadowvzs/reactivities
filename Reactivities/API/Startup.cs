@@ -1,4 +1,7 @@
 using Persistence;
+using MediatR;
+using Application.Activities;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +41,7 @@ namespace API
                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://172.18.0.2:5000");
                 });
             });
+            services.AddMediatR(typeof(List.Handler).Assembly);
             services.AddControllers();
         }
 

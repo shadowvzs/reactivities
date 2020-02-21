@@ -88,6 +88,8 @@ dotnet add reference ../Domain/
 // return an array of string should be:
 //                 return  new string[] { "value1", "value2" };
 
+// NOTE!!: We use ControllerBase and not Controller for extend our controller because ControllBase not have view support unlike Controller have
+
 // run a specific project, and we should check this in browser: http://localhost:5000/api/values
 dotnet run -p API/
 
@@ -270,4 +272,13 @@ dotnet ef migrations add "ActivityEntityAdded" -p Persistence/ -s API/
 // created Seed.cs with SeedData method with a different technique to seed data into database 
 // then execute at web api start if no data in table with API/Program.cs - Main - scope where we jave access to context
 
+// INSTALL: in vsc - nuget add package: MediatR.Extensions.Microsoft.DependencyInjection
 
+// --- MEADIATOR/MediatR LOGIC --- motto is keep controller dumb/slim and each method have only 1 responsibility (receive request and send back the response from mediator)
+// - create our handler into Application/Activities/List.cs where we inject domain and persistence, here we inject the DataContext and make the async query in database
+// - create our controller into API/Controllers/ActivitiesController.cs but this time instead of DataContext we inject our mediator from Application/Activities folder
+// our new get from controller use List method from the mediator
+// ex: public async Task<ActionResult<IEnumerable<Activity>>> List()
+// - inject mediator into Startup.cs into dependency injection container (ConfigureServices), \
+// ex.: services.AddMediatR(typeof(List.Handler).Assembly);
+// List.Handler is comming from Application/Activities/List.cs - Handler class in List class (so we must import that too with MediatR into StartUp.cs)
