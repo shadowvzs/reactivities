@@ -326,4 +326,5 @@ dotnet ef migrations add "ActivityEntityAdded" -p Persistence/ -s API/
 // STEP 4: video 45 - about creatting custom snippet for vscode for make faster the implementing mediator command class
 
 // Added Edit.cs and created the edit mediator and method for edit controller
+// Added Delete.cs and created the delete mediator and method for edit controller
 

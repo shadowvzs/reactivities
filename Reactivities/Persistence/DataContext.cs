@@ -1,6 +1,4 @@
-﻿using System;
-using Domain;
-
+﻿using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence
