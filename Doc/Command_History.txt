@@ -281,4 +281,45 @@ dotnet ef migrations add "ActivityEntityAdded" -p Persistence/ -s API/
 // ex: public async Task<ActionResult<IEnumerable<Activity>>> List()
 // - inject mediator into Startup.cs into dependency injection container (ConfigureServices), \
 // ex.: services.AddMediatR(typeof(List.Handler).Assembly);
-// List.Handler is comming from Application/Activities/List.cs - Handler class in List class (so we must import that too with MediatR into StartUp.cs)
+// NOTE 1: List.Handler is comming from Application/Activities/List.cs - Handler class in List class (so we must import that too with MediatR into StartUp.cs)
+// NOTE 2: we need add mediator only once because our type will be same for every handler (List, Details etc all got same structure)
+
+// we create Details.cs into Application/Activities with similiar way like List.cs except here we use Activity type instead of List<Activity> and in query we have a param
+// we create new method into controller for getting only 1 value, ex:
+//        [HttpGet("{id}")]
+//        public async Task<ActionResult<Activity>> Details(Guid id)
+//        {
+//            return await _mediator.Send(new Details.Query{Id = id} );
+//        }  
+
+// CANCELLATIONTOKEN - used for abort the request if user click to something which takes alot time then use click to cancel/stop in browser
+// ex heavy math calculations or database query is stopable in this case
+// first we must propagate the cancellationToken from controller to mediator
+// API/Controllers/ActivitiesController.cs
+// public async Task<ActionResult<List<Activity>>> List(CancellationToken ct)
+// {
+// return await _mediator.Send(new List.Query(), ct);
+// }
+// Applications/Activity/List.cs
+// ex. var activities = await _context.Activities.ToListAsync(cancellationToken);
+// or manually we thrown exception which we should catch
+// try {
+// cancellationToken.ThrownIfCancellationRequested();
+// } catch (Exception ex) when (ex is TaskCancelException) { ... }
+
+// LOGGER - useage of terminal logger
+// inject into constructor like: 
+// public Handler(DataContext context, ILogger<List> logger) - List is the class which want log and import Microsoft.Extensions.Logging;
+// { var i = 2; logger.LogInformation($"Task {i} completed"); }
+
+// create Create.cs mediator into Application/Activities/ - Command mediator which have few differences vs Query like Handler returning type is Unit
+// we use Add instead of AddAsync (because the recommandation is we can use sync Add everytime except some secial case when we must generate few thing)
+//                 _context.Activities.Add(activity);
+//                var success = await _context.SaveChangesAsync() > 0; 
+// SaveChangesAsync() return Task<int> - this int is nr of changes saved into db. if it is 0 then not was added to db
+//                if (success) return Unit.Value; // empty object but return resp. code 200
+
+// CONTROLLER - REQUEST BODY - POST/PUT
+// if we use [ApiController] then don't need to specify the [FromBody] (ex. public async Task<ActionResult<Unit>> Create([FromBody] Activity dto) )
+// we can use directly the mediator command handler
+
