@@ -274,7 +274,9 @@ dotnet ef migrations add "ActivityEntityAdded" -p Persistence/ -s API/
 
 // INSTALL: in vsc - nuget add package: MediatR.Extensions.Microsoft.DependencyInjection
 
-// --- MEADIATOR/MediatR LOGIC --- motto is keep controller dumb/slim and each method have only 1 responsibility (receive request and send back the response from mediator)
+// --- MEADIATOR/MediatR + CQRS (command and query) LOGIC --- motto is keep controller dumb/slim and each method have only 1 responsibility 
+// receive request and send back the response from mediator also controller cannot know anymore about the logic, it is just responsible to repond to http request and each individual part should be updated without make any issue
+
 // - create our handler into Application/Activities/List.cs where we inject domain and persistence, here we inject the DataContext and make the async query in database
 // - create our controller into API/Controllers/ActivitiesController.cs but this time instead of DataContext we inject our mediator from Application/Activities folder
 // our new get from controller use List method from the mediator

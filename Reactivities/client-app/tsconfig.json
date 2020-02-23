@@ -1,12 +1,19 @@
 {
-  "compilerOptions": {
-    "module": "none",
-    "moduleResolution": "node",
-    "jsx": "react",
-    "esModuleInterop": true,
-    "target": "es6",
-    "experimentalDecorators": true,
-    "lib": ["es2015", "dom", "dom.iterable"],
-    "sourceMap": true
-  }
+    "compilerOptions": {
+        "module": "none",
+        "moduleResolution": "node",
+        "jsx": "react",
+        "esModuleInterop": true,
+        "target": "es6",
+        "experimentalDecorators": true,
+        "lib": ["es2015", "dom", "dom.iterable"],
+        "sourceMap": true,
+        "baseUrl": "./src",
+        "paths": {
+            "@layout/*": ["app/layout/*"],
+            "@models/*": ["app/models/*"],
+            "@features": ["features/*"],
+            "@configs": ["configs/*"]
+        }
+    }
 }
