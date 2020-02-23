@@ -330,3 +330,7 @@ dotnet ef migrations add "ActivityEntityAdded" -p Persistence/ -s API/
 // Added Edit.cs and created the edit mediator and method for edit controller
 // Added Delete.cs and created the delete mediator and method for edit controller
 
+// drop database
+dotnet ef database drop -p Persistence/ -s API/ 
+
+

@@ -4,7 +4,7 @@ import { Card, Image, Button } from 'semantic-ui-react'
 
 type ItemProps = IActivity & { 
     setEditMode: (arg0: boolean) => void;
-    setSelectedActivity: (arg0: IActivity) => void; 
+    setSelectedActivity: (arg0?: IActivity) => void; 
 };
 const ActivityDetails: React.FC<ItemProps> = ({ setEditMode, setSelectedActivity, ...activity }) => {
     const { category, city, date, description, title, venue } = activity;

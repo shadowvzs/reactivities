@@ -1,41 +1,44 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import { IActivity } from "@models/Activity";
 import { Button, Label, Item, Segment } from 'semantic-ui-react'
 
-type ItemProps = IActivity & Pick<ActivityDashboardProps, 'setSelectedActivity' | 'onDelete'>;
-const ActivityItem: React.FC<ItemProps> = ({ onDelete, setSelectedActivity, ...activity }) => {
-    const { id, category, city, date, description, title, venue } = activity;
-    return (
-        <Item>
-            <Item.Content>
-                <Item.Header as='a'>{title}</Item.Header>
-                <Item.Meta>{date}</Item.Meta>
-                <Item.Description>
-                    <div>{ description }</div>
-                    <div>{city}, {venue}</div>
-                </Item.Description>
-                <Item.Extra>
-                    <Button floated='right' content='View' color='blue' onClick={() => setSelectedActivity(activity)} />
-                    <Button floated='right' content='Delete' color='red' onClick={() => onDelete(id)} />
-                    <Label basic content={category} />
-                </Item.Extra>
-            </Item.Content>
-        </Item>
-    );
-};
-
 interface ActivityDashboardProps {
     activities: IActivity[];
-    setSelectedActivity: (arg0: IActivity) => void;
-    onDelete: (id: string) => void;
+    submitting: boolean;
+    target: string;
+    setSelectedActivity: (arg0?: IActivity) => void;
+    onDelete: (ev: SyntheticEvent<HTMLButtonElement>, id: string) => void;
 }
 
-const ActivityList: React.FC<ActivityDashboardProps> = ({ activities, onDelete, setSelectedActivity }) => {
+const ActivityList: React.FC<ActivityDashboardProps> = ({ target, activities, submitting, onDelete, setSelectedActivity }) => {
 
     return (
         <Segment clearing>
             <Item.Group divided>
-                { activities.map(x => <ActivityItem key={x.id} {...x} onDelete={onDelete} setSelectedActivity={setSelectedActivity} />)}
+                { activities.map(x => (
+                    <Item>
+                        <Item.Content>
+                            <Item.Header as='a'>{x.title}</Item.Header>
+                            <Item.Meta>{x.date}</Item.Meta>
+                            <Item.Description>
+                                <div>{x.description}</div>
+                                <div>{x.city}, {x.venue}</div>
+                            </Item.Description>
+                            <Item.Extra>
+                                <Button floated='right' content='View' color='blue' onClick={() => setSelectedActivity(x)} />
+                                <Button 
+                                    name={x.id}
+                                    loading={target === x.id && submitting} 
+                                    floated='right' 
+                                    content='Delete' 
+                                    color='red' 
+                                    onClick={(e) => onDelete(e, x.id as string)} 
+                                />
+                                <Label basic content={x.category} />
+                            </Item.Extra>
+                        </Item.Content>
+                    </Item>
+                ))}
             </Item.Group>
         </Segment>
     );

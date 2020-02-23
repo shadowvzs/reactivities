@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Menu, Container, MenuItem, Button } from 'semantic-ui-react'
+import { Menu, Container, MenuItemProps, Button } from 'semantic-ui-react'
 
 const menuList = ['Activities'];
 
@@ -10,7 +10,7 @@ interface NavbarProps {
 const NavBar = ({ openCreateForm }: NavbarProps) => {
 
     const [activeItem, setActiveItem] = useState('home');
-    const onClick = (e: React.MouseEvent, { name }) => setActiveItem(name);
+    const onClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, { name }: MenuItemProps) => setActiveItem(name as string);
 
     return (
         <Menu fixed='top' inverted>

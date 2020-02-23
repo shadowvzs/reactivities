@@ -3,12 +3,13 @@ import { IActivity } from "@models/Activity";
 import { Segment, Form, Button } from 'semantic-ui-react'
 
 interface ActivityFormProps {
-    activity: IActivity;
+    activity?: IActivity;
+    submitting: boolean;
     setEditMode: (arg0: boolean) => void;
     onCreateOrEdit: (arg0: IActivity) => void;
 }
 
-const ActivityForm: React.FC<ActivityFormProps> = ({ activity = {}, setEditMode, onCreateOrEdit }) => {
+const ActivityForm: React.FC<ActivityFormProps> = ({ activity = {}, submitting, setEditMode, onCreateOrEdit }) => {
 
     const [state, setState] = useState<IActivity>({
         id: activity ? activity.id : undefined,
@@ -38,8 +39,8 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ activity = {}, setEditMode,
                 <Form.Input name='date' type='datetime-local' placeholder='Date' value={state.date} onChange={onChange} />
                 <Form.Input name='city' placeholder='City' value={state.city} onChange={onChange} />
                 <Form.Input name='venue' placeholder='Venue' value={state.venue} onChange={onChange} />
-                <Button floated='right' positive type='submit' content='Submit' />
-                <Button floated='right' type='button' content='Cancel' onClick={() => setEditMode(false)}/>
+                <Button floated='right' positive type='submit' content='Submit' loading={submitting} />
+                <Button floated='right' type='button' content='Cancel' onClick={() => setEditMode(false)} loading={submitting} />
             </Form>
         </Segment>      
     );

@@ -43,7 +43,6 @@ namespace Application.Activities
                 activity.City = request.City ?? activity.City;
                 activity.Venue = request.Venue ?? activity.Venue;
 
-                _context.Activities.Add(activity);
                 var success = await _context.SaveChangesAsync() > 0;
 
                 if (success) return Unit.Value;
