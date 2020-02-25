@@ -1,21 +1,17 @@
-import React, { SyntheticEvent } from "react";
-import { IActivity } from "@models/Activity";
+import React, { useContext } from "react";
 import { Button, Label, Item, Segment } from 'semantic-ui-react'
+import { observer } from 'mobx-react-lite';
+import ActivityStore from "@stores/activityStore";
 
-interface ActivityDashboardProps {
-    activities: IActivity[];
-    submitting: boolean;
-    target: string;
-    setSelectedActivity: (arg0?: IActivity) => void;
-    onDelete: (ev: SyntheticEvent<HTMLButtonElement>, id: string) => void;
-}
-
-const ActivityList: React.FC<ActivityDashboardProps> = ({ target, activities, submitting, onDelete, setSelectedActivity }) => {
+const ActivityList = () => {
+    
+    const activityStore = useContext(ActivityStore);
+    const { activitiesByDate, selectActivity, target, submitting, onDelete } = activityStore;
 
     return (
         <Segment clearing>
             <Item.Group divided>
-                { activities.map(x => (
+                { activitiesByDate.map(x => (
                     <Item>
                         <Item.Content>
                             <Item.Header as='a'>{x.title}</Item.Header>
@@ -25,7 +21,7 @@ const ActivityList: React.FC<ActivityDashboardProps> = ({ target, activities, su
                                 <div>{x.city}, {x.venue}</div>
                             </Item.Description>
                             <Item.Extra>
-                                <Button floated='right' content='View' color='blue' onClick={() => setSelectedActivity(x)} />
+                                <Button floated='right' content='View' color='blue' onClick={() => selectActivity(x)} />
                                 <Button 
                                     name={x.id}
                                     loading={target === x.id && submitting} 
@@ -44,4 +40,4 @@ const ActivityList: React.FC<ActivityDashboardProps> = ({ target, activities, su
     );
 };
 
-export default ActivityList;
+export default observer(ActivityList);

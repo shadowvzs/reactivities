@@ -12,10 +12,11 @@
         "sourceMap": true,
         "baseUrl": "src",
         "paths": {
-            "@layout/*": ["app/layout/*"],
-            "@models/*": ["app/models/*"],
-            "@features": ["features/*"],
-            "@service": ["app/api/service"]
+            "@layout/*":   ["app/layout/*"],
+            "@models/*":   ["app/models/*"],
+            "@features/*": ["features/*"],
+            "@service":    ["app/api/service.ts"],
+            "@stores/*":   ["app/stores/*"]
         }
     }
 }

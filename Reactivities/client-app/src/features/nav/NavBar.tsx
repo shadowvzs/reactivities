@@ -1,14 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Menu, Container, MenuItemProps, Button } from 'semantic-ui-react'
+import ActivityStore from "@stores/activityStore";
 
 const menuList = ['Activities'];
 
-interface NavbarProps {
-    openCreateForm: () => void;
-}
+const NavBar = () => {
 
-const NavBar = ({ openCreateForm }: NavbarProps) => {
-
+    const { openCreateForm } = useContext(ActivityStore);
     const [activeItem, setActiveItem] = useState('home');
     const onClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, { name }: MenuItemProps) => setActiveItem(name as string);
 
@@ -21,7 +19,7 @@ const NavBar = ({ openCreateForm }: NavbarProps) => {
                 </Menu.Item>
                 {menuList.map(x => <Menu.Item key={x} name={x} active={x === activeItem} onClick={onClick} />)}
                 <Menu.Item>
-                    <Button positive content='Create Activity' onClick={openCreateForm} />
+                    <Button positive content='Create Activity' onClick={() => openCreateForm()} />
                 </Menu.Item>
             </Container>
       </Menu>

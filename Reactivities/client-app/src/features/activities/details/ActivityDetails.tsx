@@ -1,14 +1,13 @@
-import React from "react";
-import { IActivity } from "@models/Activity";
+import React, { useContext } from "react";
 import { Card, Image, Button } from 'semantic-ui-react'
+import ActivityStore from "@stores/activityStore";
+import { observer } from 'mobx-react-lite';
 
-type ItemProps = IActivity & { 
-    setEditMode: (arg0: boolean) => void;
-    setSelectedActivity: (arg0?: IActivity) => void; 
-};
-const ActivityDetails: React.FC<ItemProps> = ({ setEditMode, setSelectedActivity, ...activity }) => {
-    const { category, city, date, description, title, venue } = activity;
-    
+const ActivityDetails = () => {
+
+    const { selectedActivity, cancelEditMode, openCreateForm } = useContext(ActivityStore);
+    const { id, category, city, date, description, title, venue } = selectedActivity || {};
+
     return (
         <Card fluid>
             <Image src={`/assets/categoryImages/${category}.png`} wrapped ui={false} />
@@ -23,12 +22,12 @@ const ActivityDetails: React.FC<ItemProps> = ({ setEditMode, setSelectedActivity
             </Card.Content>
             <Card.Content extra>
                 <Button.Group widths={2}>
-                    <Button basic color='blue' content='Edit' onClick={() => setEditMode(true)}/>
-                    <Button basic color='grey' content='Cancel' onClick={() => setSelectedActivity(undefined)} />
+                    <Button basic color='blue' content='Edit' onClick={() => openCreateForm(id)}/>
+                    <Button basic color='grey' content='Cancel' onClick={() => cancelEditMode()} />
                 </Button.Group>
             </Card.Content>
         </Card>        
     );
 };
 
-export default ActivityDetails;
+export default observer(ActivityDetails);

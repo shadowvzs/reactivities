@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { IActivity } from "@models/Activity";
 import { Segment, Form, Button } from 'semantic-ui-react'
+import { observer } from 'mobx-react-lite';
+import ActivityStore from "@stores/activityStore";
 
-interface ActivityFormProps {
-    activity?: IActivity;
-    submitting: boolean;
-    setEditMode: (arg0: boolean) => void;
-    onCreateOrEdit: (arg0: IActivity) => void;
-}
-
-const ActivityForm: React.FC<ActivityFormProps> = ({ activity = {}, submitting, setEditMode, onCreateOrEdit }) => {
-
+const ActivityForm = () => {
+    
+    const activityStore = useContext(ActivityStore);
+    const { submitting, selectedActivity, cancelEditMode } = activityStore;
+    const activity = selectedActivity || {} as IActivity;
+    
     const [state, setState] = useState<IActivity>({
         id: activity ? activity.id : undefined,
         title: activity.title || '',
@@ -26,13 +25,9 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ activity = {}, submitting, 
         setState({ ...state, [name]: value });
     };
 
-    const onSubmit = () => {
-        onCreateOrEdit(state);
-    };
-
     return (
         <Segment clearing>
-            <Form onSubmit={onSubmit}>
+            <Form onSubmit={() => activityStore.onCreateOrEdit(state)}>
                 <Form.Input name='title' placeholder='Title' value={state.title} onChange={onChange} />
                 <Form.TextArea name='description' rows={2} placeholder='Description' value={state.description} onChange={onChange} />
                 <Form.Input name='category' placeholder='Category' value={state.category} onChange={onChange} />
@@ -40,10 +35,10 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ activity = {}, submitting, 
                 <Form.Input name='city' placeholder='City' value={state.city} onChange={onChange} />
                 <Form.Input name='venue' placeholder='Venue' value={state.venue} onChange={onChange} />
                 <Button floated='right' positive type='submit' content='Submit' loading={submitting} />
-                <Button floated='right' type='button' content='Cancel' onClick={() => setEditMode(false)} loading={submitting} />
+                <Button floated='right' type='button' content='Cancel' onClick={() => cancelEditMode()} loading={submitting} />
             </Form>
         </Segment>      
     );
 };
 
-export default ActivityForm;
+export default observer(ActivityForm);
