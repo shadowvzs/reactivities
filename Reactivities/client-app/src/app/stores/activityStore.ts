@@ -3,6 +3,7 @@ import { observable, action, computed, configure, runInAction } from 'mobx';
 import services from "@service";
 import { IActivity } from '@models/Activity';
 import { v4 as uuid } from "uuid";
+import service from '@service';
 
 // add strict mode
 configure({ enforceActions: true });
@@ -10,9 +11,8 @@ configure({ enforceActions: true });
 class ActivityStore {
     @observable activityRegistry = new Map();
     @observable loadingInitial = false;
-    @observable editMode = false;
     @observable submitting = false;
-    @observable selectedActivity?: IActivity;
+    @observable activity?: IActivity;
     @observable target = '';
 
     @computed get activitiesByDate() {
@@ -41,16 +41,29 @@ class ActivityStore {
         });
     }
 
-    @action selectActivity = (activity?: IActivity) => {
-        this.selectedActivity = activity;
-        this.editMode = false;
+    @action loadActivity = async (id: string) => {
+        let activity = this.getActivity(id);
+        if (activity) {
+            this.activity = activity;
+        } else {
+            this.loadingInitial = true;
+            try {
+                activity = await service.activity.details(id);
+                runInAction('load a single activity', () => this.activity = activity);
+            } catch (err) {
+                console.error(err);
+            }
+            runInAction('disable loader for activity load', () => this.loadingInitial = false);
+        }
     }
 
-    @action setEditMode = (value: boolean) => {
-        this.editMode = value;
+    getActivity = (id: string) => {
+        return this.activityRegistry.get(id);
     }
 
-    @action cancelEditMode = () => this.selectActivity(undefined);
+    @action clearActivity = () => {
+        this.activity = undefined;
+    }
 
     @action setSubmitting = (value: boolean) => {
         this.submitting = value;
@@ -62,30 +75,29 @@ class ActivityStore {
             try {
                 const existingActivity = this.activityRegistry.get(activity.id);
                 if (!existingActivity) return;
-                await services.activity.update(existingActivity);
                 Object.assign(existingActivity, activity);
+                await services.activity.update(existingActivity);
                 runInAction('update activity', () => {
                     this.activityRegistry.set(existingActivity.id, existingActivity);
+                    this.activity = existingActivity;
                 });
-                this.selectActivity(existingActivity);
-                this.setEditMode(false);
             } catch (err) {
                 console.error(err);
             }
         } else {
             try {
-                const newActivity: IActivity = {...activity, id: uuid()};
-                await services.activity.create(newActivity);
+                activity.id = uuid();
+                await services.activity.create(activity);
                 runInAction('create activity', () => {
-                    this.activityRegistry.set(newActivity.id, newActivity);
+                    this.activityRegistry.set(activity.id, activity);
+                    this.activity = activity;
                 });  
-                this.selectActivity(newActivity);
-                this.setEditMode(false);            
             } catch (err) {
                 console.error(err);
             }            
         }
         this.setSubmitting(false);
+        return activity;
     }
 
     @action onDelete = async (ev: React.SyntheticEvent<HTMLButtonElement>, id: string) => {
@@ -99,11 +111,6 @@ class ActivityStore {
             console.error(err);
         }
     }
-
-    @action openCreateForm = (id?: string) => {
-        this.selectedActivity = id ? this.activityRegistry.get(id) : undefined;
-        this.setEditMode(true);
-    };
 }
 
 // another option is not using decorator in class and we use it here:
