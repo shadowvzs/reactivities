@@ -334,3 +334,44 @@ dotnet ef migrations add "ActivityEntityAdded" -p Persistence/ -s API/
 dotnet ef database drop -p Persistence/ -s API/ 
 
 
+// Step 10: E122 - SIMPLE SERVER SIDE ENTITY VALIDATION / Data Annotation validation for entity, in Application/Activities/Create.cs in Command
+// adding decorator for property like [Required] and this will automatical thrown error code 400 with correct error message in response
+// Reason why automatical validated and sent error if validation fail is because we use [ApiController] in ActivitiesController.cs
+
+
+// VSC DOTNET DEBUGGER
+// 1. - in launch.json must have the following lines for debugger:
+//        {
+//             "name": ".NET Core Attach",
+//             "type": "coreclr",
+//             "request": "attach",
+//             "processId": "${command:pickProcess}"
+//        }
+// 2. - select a breakpoint in vsc (that red dot at left side)
+// 3. - we must go to left side debug tab and select ".NET Core Attach" on top-left corner
+// 4. - we must select API.dll
+// 5. - comment out the [ApiController] decorator from  controller which we want debug (ex. ActivitiesController.cs)
+// 6. - make request and now we will see the variables inside the Variables box (ex. this, command)
+// 7. - validation error is in: this/ModelState (we have more prop here like Count, ResultView[0].Key and Value.Errors[0].ErrorMessage)
+//   full path for error message is something like this:  this.ModelState.ResultView[0].Value.Errors[0].ErrorMessage
+
+// VALIDATION HANDLING - Application/Activities/Create.cs - async Create method ex.:
+// if (!ModelState.isValid) { return BadRequest(ModelState); before the meditor send method calling
+
+// FLUENT VALIDATION - we use this which act like middleware between our mediator command and handler
+// NOTE: only netstandard2.0 and netcoreapp3.0 is compatible with this package so we must change in Application.csproj
+// but we must do same for all class libs (Domain, Persistence 
+// ----- then dotnet restore -----
+// we must go to view -> command palette -> nuget package manager: add package in vsc:
+// FluentValidation - FluentValidation.AspNetCore and install into Application project because there is our mediator handlers/business logic too
+// in mediator (ex. Application/Activities/Create.cs) we create a public class for this with CommandValidator name
+// ex.: public class CommandValidator : AbstractValidator<Command> // in this case we walidate the command class so thats why we add Command into <>
+// we must create constructor for it
+// and we must add into start class - Startup.cs and change this:
+// services.AddControllers(); => services.AddControllers().AddFluentValidation(cfg => 
+// {
+//  cfg.RegisterValidatorsFromAssemblyContaining<Create>();
+// };
+
+// NOTE !!!: PACKAGE COMPATIBILITY
+// if installed package not compatible with the dotnet version then simple give error when we try to add to "using"-s and VSC doesnt give hint to implement it
