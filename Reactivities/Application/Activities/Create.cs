@@ -3,8 +3,10 @@ using Domain;
 using Persistence;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation;
+using Application.Errors;
 
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 // using System.ComponentModel.DataAnnotations;
@@ -65,7 +67,7 @@ namespace Application.Activities
 
                 if (success) return Unit.Value;
 
-                throw new Exception("Problem saving changes");
+                throw new RestException(HttpStatusCode.NotFound, new { activity = "Problem saving changes" });
             }
         }
     }

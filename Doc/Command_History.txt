@@ -375,3 +375,15 @@ dotnet ef database drop -p Persistence/ -s API/
 
 // NOTE !!!: PACKAGE COMPATIBILITY
 // if installed package not compatible with the dotnet version then simple give error when we try to add to "using"-s and VSC doesnt give hint to implement it
+
+// Validation on Controller level:
+// sometimes we want return notFound error if entity isn't found then we can check if value is null and if yes we can return NotFound(); - not fund error
+// we can create our own Exception handler (ex. Applications/Errors/RestException.cs which extends the Exception class)
+
+// Exception middleware for REST:
+// we create middleware in web api folder which according the ms advice should be the last middleware in Startup.cs (ex. /API/Middleware/ErrorHandlingMiddleware.cs)
+// in our case we comment out app.UseDeveloperExceptionPage(); from Startup.cs, we insert our middleware into first place in Configure method
+// app.UseMiddleware<ErrorHandlingMiddleware>();
+
+
+
