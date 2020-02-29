@@ -1,9 +1,29 @@
 import axios, { AxiosResponse } from "axios";
 import { IActivity } from "@models/Activity";
+import { history } from "../..";
+import { toast } from "react-toastify";
 
 const API_URL = 'http://172.18.0.2:4999/api';
 
 axios.defaults.baseURL = API_URL;
+
+// we have access for error informations
+// example error.response.data.errors
+axios.interceptors.response.use(undefined, error => {
+    // backend if send 404 error when entity not found with RestError handler
+    if (error.message === 'Network Error' && !error.response) {
+        toast.error('Network error - make sure API is running!');
+    }
+    const { status, data, config } = error.response;
+    if (status === 404) {
+        history.push('/notfound');
+    // if guid is invalid
+    } else if (status === 400 && config.method === 'get' && data.errors.id) {
+        history.push('/notfound');
+    } else if (status === 500) {
+        toast.error('Server error - check the terminal for more info!');
+    }
+});
 
 const responseBody = (response: AxiosResponse) => response.data;
 

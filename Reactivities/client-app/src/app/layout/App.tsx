@@ -5,8 +5,10 @@ import ActivityDashboard from "@features/activities/dashboard/ActivityDashboard"
 import ActivityForm from "@features/activities/form/ActivityForm";
 import ActivityDetails from "@features/activities/details/ActivityDetails";
 import HomePage from "@features/home/HomePage";
+import NotFound from "./NotFound";
+import { ToastContainer } from 'react-toastify';
 import { observer } from 'mobx-react-lite';
-import { Route, withRouter, RouteComponentProps } from "react-router-dom";
+import { Route, withRouter, RouteComponentProps, Switch } from "react-router-dom";
 
 // NOTE: issue if we are in edit form and click toc reate form then form not reseted
 //        because not was unmounted and keep the state
@@ -19,15 +21,19 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
 
     return (
         <>
+            <ToastContainer position='bottom-right' />
             <Route exact path="/" component={HomePage} />
             <Route exact path="/(.+)" render={() => (
                 <>
                     <NavBar />
                     <Container style={{ marginTop: '7em' }}>
-                        <Route exact path="/" component={HomePage} />
-                        <Route exact path="/activities" component={ActivityDashboard} />
-                        <Route path="/activities/:id" component={ActivityDetails} />
-                        <Route key={location.key} path={["/createActivity", "/manage/:id"]} component={ActivityForm} />
+                        <Switch>
+                            <Route exact path="/" component={HomePage} />
+                            <Route exact path="/activities" component={ActivityDashboard} />
+                            <Route path="/activities/:id" component={ActivityDetails} />
+                            <Route key={location.key} path={["/createActivity", "/manage/:id"]} component={ActivityForm} />
+                            <Route component={NotFound} />
+                        </Switch>
                     </Container>
                 </>
             )} />

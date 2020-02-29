@@ -58,11 +58,14 @@ class ActivityStore {
             this.loadingInitial = true;
             try {
                 activity = await service.activity.details(id);
-                runInAction('load a single activity', () => this.activity = activity);
+                runInAction('load a single activity', () => {
+                    this.activity = activity;
+                    this.loadingInitial = false;
+                });
             } catch (err) {
-                console.error(err);
-            }
-            runInAction('disable loader for activity load', () => this.loadingInitial = false);
+                runInAction('disable loader for activity load', () => this.loadingInitial = false);
+                throw err;
+            }            
         }
     }
 

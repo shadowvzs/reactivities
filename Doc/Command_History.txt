@@ -384,6 +384,7 @@ dotnet ef database drop -p Persistence/ -s API/
 // we create middleware in web api folder which according the ms advice should be the last middleware in Startup.cs (ex. /API/Middleware/ErrorHandlingMiddleware.cs)
 // in our case we comment out app.UseDeveloperExceptionPage(); from Startup.cs, we insert our middleware into first place in Configure method
 // app.UseMiddleware<ErrorHandlingMiddleware>();
-
+// after this in mediator handler we should use RestException, so instead of throw Exception('...'); we will use: throw RestException('...');
+// and we need import the error handlers "using Application.Errors;"
 
 
