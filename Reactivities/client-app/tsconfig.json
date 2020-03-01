@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "none",
+        "module": "esnext",
         "moduleResolution": "node",
         "jsx": "react",
         "strict": true,
@@ -12,11 +12,16 @@
         "sourceMap": true,
         "baseUrl": "src",
         "paths": {
+            "@common/*":   ["app/common/*"],
             "@layout/*":   ["app/layout/*"],
             "@models/*":   ["app/models/*"],
             "@features/*": ["features/*"],
             "@service":    ["app/api/service.ts"],
             "@stores/*":   ["app/stores/*"]
-        }
+        },
+        "typeRoots": [
+            "./node_modules/@types",
+            "./typings-custom"
+        ]        
     }
 }

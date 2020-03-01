@@ -24,10 +24,14 @@ module.exports = {
                 loader: "ts-loader"
             },
             {
+                test: /\.(jpg|png|gif|svg|woff|woff2|ttf|eot)$/,
+                use: 'file-loader?name=fonts/[name].[ext]!static'
+            },
+            {
                 test: /\.css$/,
-                use: ['style-loader', 'css-loader']
-            }      
-        ]
+                loaders: ['style-loader', 'css-loader']            
+            }
+        ] 
     },
 
     // File extensions to support resolving
