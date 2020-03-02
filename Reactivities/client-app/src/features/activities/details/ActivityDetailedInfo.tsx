@@ -2,6 +2,7 @@ import React from "react";
 import { observer } from 'mobx-react-lite';
 import { Segment, Grid, Icon } from "semantic-ui-react";
 import { IActivity } from "@models/Activity";
+import { format } from "date-fns";
 
 interface HeaderProps {
     activity: IActivity;
@@ -28,7 +29,7 @@ const ActivityDetailedInfo: React.FC<HeaderProps> = ({ activity }) => {
                     </Grid.Column>
                     <Grid.Column width={15}>
                         <span>
-                            {activity.date}
+                            {format(activity.date!, 'eeee do MMMM')} at {format(activity.date!, 'h:mm a')}
                         </span>
                     </Grid.Column>
                 </Grid>

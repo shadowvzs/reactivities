@@ -4,6 +4,8 @@ import services from "@service";
 import { IActivity } from '@models/Activity';
 import { v4 as uuid } from "uuid";
 import service from '@service';
+import { history } from "../..";
+import { toast } from 'react-toastify';
 
 // add strict mode
 configure({ enforceActions: true });
@@ -20,9 +22,9 @@ class ActivityStore {
     }
 
     groupActivitiesByDate(activities: IActivity[]) {
-        const sortedActivities = activities.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+        const sortedActivities = activities.sort((a, b) => +a.date! - +b.date!);
         return Object.entries(sortedActivities.reduce((activityGroup, activity) => {
-            const date = activity.date.split('T')[0];
+            const date = activity.date!.toISOString().split('T')[0];
             activityGroup[date] = activityGroup[date] ? [...activityGroup[date], activity] : [activity];
             return activityGroup;
         }, {} as { [key: string]: IActivity[]}));
@@ -36,7 +38,7 @@ class ActivityStore {
             // since await use promise then in behind we must run every observable changes in runInAction, before await it is ok
             runInAction('loading activities', () => {
                 activities.forEach(activity => {
-                    activity.date = activity.date.split('.')[0];
+                    activity.date = new Date(activity.date!);
                     this.activityRegistry.set(activity.id, activity);
                 });
             });
@@ -59,14 +61,17 @@ class ActivityStore {
             try {
                 activity = await service.activity.details(id);
                 runInAction('load a single activity', () => {
+                    activity.date = new Date(activity.date);
                     this.activity = activity;
+                    this.activityRegistry.set(activity.id, activity);
                     this.loadingInitial = false;
                 });
             } catch (err) {
                 runInAction('disable loader for activity load', () => this.loadingInitial = false);
-                throw err;
+                console.log(err);
             }            
         }
+        return activity
     }
 
     getActivity = (id: string) => {
@@ -94,7 +99,9 @@ class ActivityStore {
                     this.activity = existingActivity;
                 });
             } catch (err) {
-                console.error(err);
+                this.setSubmitting(false);
+                toast.error('Problem submitting data!');
+                return console.error(err.response);
             }
         } else {
             try {
@@ -105,11 +112,13 @@ class ActivityStore {
                     this.activity = activity;
                 });  
             } catch (err) {
-                console.error(err);
+                this.setSubmitting(false);
+                toast.error('Problem submitting data!');
+                return console.error(err.response);
             }            
         }
         this.setSubmitting(false);
-        return activity;
+        history.push(`/activities/${activity.id}`);
     }
 
     @action onDelete = async (ev: React.SyntheticEvent<HTMLButtonElement>, id: string) => {

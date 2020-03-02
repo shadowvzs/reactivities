@@ -24,9 +24,13 @@ module.exports = {
                 loader: "ts-loader"
             },
             {
-                test: /\.(jpg|png|gif|svg|woff|woff2|ttf|eot)$/,
+                test: /\.(gif|ttf|eot|svg|woff2?)$/,
+                use: 'url-loader?name=[name].[ext]',
+            },       
+            {
+                test: /\.(jpg|png|svg)$/,
                 use: 'file-loader?name=fonts/[name].[ext]!static'
-            },
+            },        
             {
                 test: /\.css$/,
                 loaders: ['style-loader', 'css-loader']            

@@ -2,25 +2,12 @@ import React from "react";
 import { Button, Label, Item, Segment, Icon } from 'semantic-ui-react'
 import { observer } from 'mobx-react-lite';
 import { Link } from "react-router-dom";
+import { format } from "date-fns";
 import { IActivity } from "@models/Activity";
 
 interface ActivityListItemProps {
     activity: IActivity;
 }
-
-/*
-    const activityStore = useContext(ActivityStore);
-    const { target, submitting, onDelete } = activityStore;
-
-                    <Button 
-                        name={activity.id}
-                        loading={target === activity.id && submitting} 
-                        floated='right' 
-                        content='Delete' 
-                        color='red' 
-                        onClick={(e) => onDelete(e, activity.id as string)} 
-                    />
-*/
 
 const ActivityListItem: React.FC<ActivityListItemProps> = ({ activity }) => {
     
@@ -29,7 +16,7 @@ const ActivityListItem: React.FC<ActivityListItemProps> = ({ activity }) => {
             <Segment>
                 <Item.Group>
                     <Item>
-                        <Item.Image size='tiny' circular src='/assets/placeholder.png' />
+                        <Item.Image size='tiny' circular src={`/assets/categoryImages/${activity.category}.jpg`} />
                         <Item.Content>
                             <Item.Header as='a'>{activity.title}</Item.Header>
                             <Item.Description>
@@ -40,7 +27,7 @@ const ActivityListItem: React.FC<ActivityListItemProps> = ({ activity }) => {
                 </Item.Group>
             </Segment>
             <Segment>
-                <Icon name='clock' /> {activity.date}
+                <Icon name='clock' /> {format(activity.date!, 'h:mm a')}
                 <Icon name='marker' /> {activity.venue}, {activity.city}
             </Segment>
             <Segment secondary>
