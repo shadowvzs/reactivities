@@ -151,7 +151,9 @@ dotnet tool install --global dotnet-ef
 // or local install
 dotnet new tool-manifest
 dotnet tool install --local dotnet-ef
+// this fix the error with unknown command
 // dotnet tool install --global dotnet-ef --version 3.1.2
+// dotnet tool restore // for make the dotnet ef command active
 
 // test the installed version
 dotnet ef
@@ -386,5 +388,53 @@ dotnet ef database drop -p Persistence/ -s API/
 // app.UseMiddleware<ErrorHandlingMiddleware>();
 // after this in mediator handler we should use RestException, so instead of throw Exception('...'); we will use: throw RestException('...');
 // and we need import the error handlers "using Application.Errors;"
+
+// Step 11: - Identify
+// we create class for identity user (Domain/AppUser.cs)
+// we install Microsoft.AspNetCore.Identity.EntityFrameworkCore in nuget package manager
+// we replace the DbContext type at DataContext class to IdentityDbContext<AppUser> (and using the above lib)
+// because we declared the AppUser above we dont need DbSet like we used for Value and Activity in this class
+// we will add base.OnModelCreating(builder); into OnModelCreating method which allow us to create migration
+// we add migration: 
+dotnet ef migrations add "AddedIdentity" -p Persistence/ -s API/
+
+// we also need to a Microsoft.AspNetCore.Identity.UI 3.0.0 - sider manager and we install into API
+// we must add into Startup.cs - ConfigureServices like other things
+// !!NOTE!!: for MVC services.AddIdentity (ex. for blazzer) and services.AddIdentityCore for backend
+// var build = services.AddIdentityCore<AppUser>();                                           // for AppUser we must import Domain into StartUp.cs
+// var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);             // need to import Microsoft.AspNetCore.Identity
+// identityBuilder.AddEntityFrameworkStores<DataContext>();                                   // inject ef
+// identityBuilder.AddSignInManager<SignInManager<AppUser>>();                                // inject sign in manager
+// services.AddAuthentication();
+
+// Seed users into database
+// Persistence/Seed.cs
+// if (!userManager.Users.Any())
+//            {
+//                var users = new List<AppUser>()
+//                {
+//                    new AppUser
+//                    {
+//                        DisplayName = "Bob",
+//                        UserName = "bob",
+//                        Email = "bob@test.com" 
+//                    }
+//                }
+//            }
+// userManager.CreateAsync(users[0], "Pa$$w0rd"); // this will save into dtabase and dont need saveChanges too
+// because we use async method we also must convert void return type to async Task
+// public static void SeedData(DataContext context) => public static async Task SeedData(DataContext context, UserManager<AppUser> userManager)
+// then we must add the userManager to Seed.SeedData from Program.cs
+// var userManager = services.GetRequiredService<UserManager<AppUser>>();
+// Seed.SeedData(context, userManager).Wait();
+// NOTE: if have Exited with error code 134 then we must go to StartUp.cs and add services.AddAuthentication();
+
+// Step 11: Login handler
+// we create a login handler mediator into Application/User/Logic.cs - query like with email and password, fluent validation and password check
+// we create a base controller for aable to handle user/auth thing in other controllers
+// in base controller if mediotr not exist then we will initiate (need Microsoft.Extensions.DependencyInjection for this)
+//       private IMediator _mediator;
+//       protected IMediator Mediator => _mediator ?? (_mediator = HttpContext.RequestServices.GetService<IMediator>())
+
 
 
