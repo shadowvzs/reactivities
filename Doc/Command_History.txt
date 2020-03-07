@@ -1,4 +1,9 @@
 // we use class library, web api and solution
+// separation:
+// API - controllers
+// Application - business logic/Error/Exception catcher/Interfaces
+// Persistence - database logic
+// Infrastructure - jwt
 
 // check availaible templates for dot net cli
 dotnet new -h
@@ -389,7 +394,7 @@ dotnet ef database drop -p Persistence/ -s API/
 // after this in mediator handler we should use RestException, so instead of throw Exception('...'); we will use: throw RestException('...');
 // and we need import the error handlers "using Application.Errors;"
 
-// Step 11: - Identify
+// Step 12: - Identify
 // we create class for identity user (Domain/AppUser.cs)
 // we install Microsoft.AspNetCore.Identity.EntityFrameworkCore in nuget package manager
 // we replace the DbContext type at DataContext class to IdentityDbContext<AppUser> (and using the above lib)
@@ -429,12 +434,45 @@ dotnet ef migrations add "AddedIdentity" -p Persistence/ -s API/
 // Seed.SeedData(context, userManager).Wait();
 // NOTE: if have Exited with error code 134 then we must go to StartUp.cs and add services.AddAuthentication();
 
-// Step 11: Login handler
+// Step 12: Login handler
 // we create a login handler mediator into Application/User/Logic.cs - query like with email and password, fluent validation and password check
 // we create a base controller for aable to handle user/auth thing in other controllers
 // in base controller if mediotr not exist then we will initiate (need Microsoft.Extensions.DependencyInjection for this)
 //       private IMediator _mediator;
 //       protected IMediator Mediator => _mediator ?? (_mediator = HttpContext.RequestServices.GetService<IMediator>())
 
+// create User model which we will return to frontend, into Application/User/User.cs and returnUser types in every handle in Login.cs
+// Create infrastructure project which will be responsible for jwt validation and creation
+dotnet new classlib -n Infrastructure
+// add Infrastructure to solution and change the new project dependency (csproj) to netcoreapp3.0
+dotnet sln add Infrastructure/
+// we need add reference to Application (where is our mediator), so application project will be dependency for infrastructure project
+cd Infrastructure
+dotnet add reference ../Application/
+// addreference/deoebdebcy for API too
+cd ..
+cd API
+dotnet add reference ../Infrastructure/
+// we create interface for jwt into Application/interfaces/IJwtGenerator.cs
+// we create the jwt generator class into Ifrastructure/Security/JwtGenerator.cs (also we import the interface)
+// we must insert this service into startUp class, well the interface only (ofc we must import Infrastructure.Security and Application.Interfaces)
+// services.AddScoped<IJwtGenerator, JwtGenerator>();
+
+// Step 12: install JWT package, System.IdentityModel.Tokens.Jwt into Infrastructure project
+// in JwtGenerator class we use:
+// Claim list (we save id and name into token)
+// security key with SymmetricSecurityKey (server side secret key)
+// credentials with SigningCredentials (aram is key and security algorithm)
+// token descriptor:
+//     subject with claims[user data in token]
+//     expires[Date.Now.AddDays(7)]
+//     SigningCredentials[creds/signing credetials from above]
+// init token handler (JwtSecurityTokenHandler)
+// create token with this token handler from tokenDescriptor
+// writeToken with tokenhandler where param is the token and return it
+
+// The cool thing if we must use this then we need only import the namespace for interface where we declared the interface, example for accesing 
+// the jwtGenerator we need import only the Application.Interfaces and not the Infrastructure.Security where is our generator
+// public Handler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IJwtGenerator jwtGenerator)
 
 

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class ActivitiesController : BaseBase
+    public class ActivitiesController : BaseController
     {
 
         // GET api/activities/
