@@ -394,6 +394,7 @@ dotnet ef database drop -p Persistence/ -s API/
 // after this in mediator handler we should use RestException, so instead of throw Exception('...'); we will use: throw RestException('...');
 // and we need import the error handlers "using Application.Errors;"
 
+
 // Step 12: - Identify
 // we create class for identity user (Domain/AppUser.cs)
 // we install Microsoft.AspNetCore.Identity.EntityFrameworkCore in nuget package manager
@@ -434,6 +435,7 @@ dotnet ef migrations add "AddedIdentity" -p Persistence/ -s API/
 // Seed.SeedData(context, userManager).Wait();
 // NOTE: if have Exited with error code 134 then we must go to StartUp.cs and add services.AddAuthentication();
 
+
 // Step 12: Login handler
 // we create a login handler mediator into Application/User/Logic.cs - query like with email and password, fluent validation and password check
 // we create a base controller for aable to handle user/auth thing in other controllers
@@ -458,6 +460,7 @@ dotnet add reference ../Infrastructure/
 // we must insert this service into startUp class, well the interface only (ofc we must import Infrastructure.Security and Application.Interfaces)
 // services.AddScoped<IJwtGenerator, JwtGenerator>();
 
+
 // Step 12: install JWT package, System.IdentityModel.Tokens.Jwt into Infrastructure project
 // in JwtGenerator class we use:
 // Claim list (we save id and name into token)
@@ -476,3 +479,71 @@ dotnet add reference ../Infrastructure/
 // public Handler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IJwtGenerator jwtGenerator)
 
 
+// Step 12: Authentication
+// for jwt authentication we must install Microsoft.AspNetCore.Authentication.JwtBearer 3.0.0 into API
+// in Startup.cs at ConfigureServices we need to inject the athentication with JWT (we must import the above package)
+//            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//                .AddJwtBearer(opt =>
+//                {
+//                    opt.TokenValidationParameters = new TokenValidationParameters
+//                    {
+//                        ValidateIssuerSigningKey = true,
+//                        IssuerSigningKey = key,
+//                        ValidateAudience = false,
+//                        ValidateIssuer = false
+//                    };
+//                });
+
+// At configure we must order our middlewares
+//  app.UseAuthentication(); // must be after routing, cors but before the endpoints and UseAuthorization
+
+// Step 12: protecting controller / endpoints 
+// with [Authorize] decorator (after Http decorator) - using Microsoft.AspNetCore.Authorization;
+// so if user have no valid jwt then will get 401 - unauthorized error
+
+
+// Step 12: Secret 
+// !!! NOTE !!! this will be stored in development machhine and not on the source code!!!
+// we can generate secret (a value pair example for jwt secret key)
+dotnet user-secrets init -p API/
+// this will generate something like this: Set UserSecretsId to '42cbc11c-9b17-4bc1-8121-8ba488e6593b' for MSBuild project '/home/shared/Reactivities/API/API.csproj'.
+// this will be added into API.csproj file like:     <UserSecretsId>42cbc11c-9b17-4bc1-8121-8ba488e6593b</UserSecretsId>
+
+// for generate secret we will use dotnet user-secrets set "KEY" "VALUE" -p PROJECT/
+dotnet user-secrets set "TokenKey" "hurka gyurka" -p API/
+
+// we can list the existing secrets with (same way we have remove too)
+dotnet user-secrets list -p API/
+
+
+// Step 12: using secret for authetntication jwt key
+// if we go to startup.cs then we should replace the static key (below)
+// var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Super secret key"));
+// to (below) - note we have access to Configuration because we assigned to StartUp class
+//       public Startup(IConfiguration configuration)
+//        {
+//            Configuration = configuration;
+//        }
+// .........................
+// var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
+
+// we also must inject the configuration into JwtGenerator constructor (using Microsoft.Extensions.Configuration;)
+//        private readonly SymmetricSecurityKey _key;
+//        public JwtGenerator(IConfiguration config)
+//        {
+//            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
+//        }
+
+
+// Step 12: Authorization policy - instead of force muanlly each controller endpoint to have authorize with decorator, we check authentication automatically for every endpoint
+// in Startup.cs we must make some logic when we AddController to services
+//            services.AddControllers() 
+// we make a lambda function and add authorizationPolicy (using Microsoft.AspNetCore.Mvc.Authorization;)
+//            services.AddControllers(opt =>
+//            {
+//                var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+//                opt.Filters.Add(new AuthorizeFilter(policy));
+//            })
+
+// LOGIN - Authorization exception, for login we dont need to check if user is authorized
+// in UserController.cs we will use [AllowAnonymous] decorator for login

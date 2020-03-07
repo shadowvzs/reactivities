@@ -2,6 +2,7 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Application.Activities;
+using Microsoft.AspNetCore.Authorization;
 
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace API.Controllers
 
         // GET /api/activities/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Activity>> Details(Guid id)
         {
             return await Mediator.Send(new Details.Query{Id = id} );
