@@ -1,4 +1,4 @@
-import { observable, action, computed, configure, runInAction } from 'mobx';
+import { observable, action, computed, runInAction } from 'mobx';
 import services from "@service";
 import { IActivity } from '@models/Activity';
 import { v4 as uuid } from "uuid";
@@ -6,9 +6,6 @@ import service from '@service';
 import { history } from "../..";
 import { toast } from 'react-toastify';
 import { RootStore } from './rootStore';
-
-// add strict mode
-configure({ enforceActions: true });
 
 export default class ActivityStore {
     rootStore: RootStore;

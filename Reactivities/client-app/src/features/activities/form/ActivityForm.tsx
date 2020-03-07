@@ -32,7 +32,6 @@ const ActivityForm: React.FC<RouteComponentProps<IParams>> = ({ match, history }
     const rootStore = useContext(RootStoreContext);
     const { submitting, loadActivity, onCreateOrEdit } = rootStore.activityStore;
 
-
     const [state, setState] = useState<ActivityFormValues>(new ActivityFormValues());
     const [loading, setLoading] = useState<boolean>(false);
     

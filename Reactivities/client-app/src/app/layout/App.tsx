@@ -9,6 +9,7 @@ import NotFound from "./NotFound";
 import { ToastContainer } from 'react-toastify';
 import { observer } from 'mobx-react-lite';
 import { Route, withRouter, RouteComponentProps, Switch } from "react-router-dom";
+import LoginForm from "@features/user/LoginForm";
 
 // NOTE: issue if we are in edit form and click toc reate form then form not reseted
 //        because not was unmounted and keep the state
@@ -32,6 +33,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
                             <Route exact path="/activities" component={ActivityDashboard} />
                             <Route path="/activities/:id" component={ActivityDetails} />
                             <Route key={location.key} path={["/createActivity", "/manage/:id"]} component={ActivityForm} />
+                            <Route path="/login" component={LoginForm} />
                             <Route component={NotFound} />
                         </Switch>
                     </Container>
