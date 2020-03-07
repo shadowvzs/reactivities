@@ -288,7 +288,7 @@ dotnet ef migrations add "ActivityEntityAdded" -p Persistence/ -s API/
 // - create our controller into API/Controllers/ActivitiesController.cs but this time instead of DataContext we inject our mediator from Application/Activities folder
 // our new get from controller use List method from the mediator
 // ex: public async Task<ActionResult<IEnumerable<Activity>>> List()
-// - inject mediator into Startup.cs into dependency injection container (ConfigureServices), \
+// - inject mediator into Startup.cs into dependency injection container (ConfigureServices), 
 // ex.: services.AddMediatR(typeof(List.Handler).Assembly);
 // NOTE 1: List.Handler is comming from Application/Activities/List.cs - Handler class in List class (so we must import that too with MediatR into StartUp.cs)
 // NOTE 2: we need add mediator only once because our type will be same for every handler (List, Details etc all got same structure)
@@ -300,6 +300,8 @@ dotnet ef migrations add "ActivityEntityAdded" -p Persistence/ -s API/
 //        {
 //            return await _mediator.Send(new Details.Query{Id = id} );
 //        }  
+
+// IRequestHandler<Query, User> - First is the type Query or Command (we use same method name below with the logic) and 2nd type which will returned
 
 // CANCELLATIONTOKEN - used for abort the request if user click to something which takes alot time then use click to cancel/stop in browser
 // ex heavy math calculations or database query is stopable in this case
@@ -546,8 +548,8 @@ dotnet user-secrets list -p API/
 //                opt.Filters.Add(new AuthorizeFilter(policy));
 //            })
 
-// LOGIN - Authorization exception, for login we dont need to check if user is authorized
-// in UserController.cs we will use [AllowAnonymous] decorator for login
+// LOGIN - AUTHORIZATION EXCEPTION, for login we dont need to check if user is authorized
+// in UserController.cs we will use [AllowAnonymous] decorator for login or for the whole class
 
 // Step 12: Registration - Exception Command Mediator when we return back something even it is Command and not query mediator
 // We create Register.cs command mediator into Application/User folder
@@ -556,3 +558,17 @@ dotnet user-secrets list -p API/
 // Step 12: Custom validator - we create a Password validator which have multiple rule and reusable
 // we create Application/Validators/ValidatorExtensions (static class) for handle the password validation (will have min length, need mixed upper lower case letters etc)
 // then in Register function we use .Password() same way like NonEmpty() but this is an extension
+
+// Step 12: GetCurrentUsername
+// we create Application/Interface/IUserAccessor.cs interface
+// we create Infrastructure/Security/UserAccessor.cs class
+// here we inject the IHttpContextAccessor and access the name with:
+// var username = _httpContextAccessor.HttpContext.User?.Claim?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+// at Startup.cs we must inject our interface and class services.AddScoped<IUserAccessor, UserAccessor>(); so we can use anywhere if we inject it into constructer the IUserAccessor
+
+// Step 12: getting the CurrentUser - logged user
+// create Application/User/CurrentUser.cs - query handler - use userManager, jwtGenerator
+// add method for UserController too
+// Note in controller since we dont provide params then we leave empty () after CurrentUser method name and return this way:
+// return await Mediator.Send(new CurrentUser.Query());
+
