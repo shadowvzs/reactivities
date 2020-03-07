@@ -517,6 +517,7 @@ dotnet user-secrets list -p API/
 
 
 // Step 12: using secret for authetntication jwt key
+// NOTE: Secret key must be minimum 16 byte, cannot be less else we get the following error: IDX10603: Decryption failed. Keys tried: [PII is hidden]
 // if we go to startup.cs then we should replace the static key (below)
 // var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Super secret key"));
 // to (below) - note we have access to Configuration because we assigned to StartUp class
@@ -547,3 +548,11 @@ dotnet user-secrets list -p API/
 
 // LOGIN - Authorization exception, for login we dont need to check if user is authorized
 // in UserController.cs we will use [AllowAnonymous] decorator for login
+
+// Step 12: Registration - Exception Command Mediator when we return back something even it is Command and not query mediator
+// We create Register.cs command mediator into Application/User folder
+// we create register method into UserController
+
+// Step 12: Custom validator - we create a Password validator which have multiple rule and reusable
+// we create Application/Validators/ValidatorExtensions (static class) for handle the password validation (will have min length, need mixed upper lower case letters etc)
+// then in Register function we use .Password() same way like NonEmpty() but this is an extension
