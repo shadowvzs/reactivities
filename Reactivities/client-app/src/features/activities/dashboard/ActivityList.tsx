@@ -6,7 +6,7 @@ import ActivityListItem from "./ActivityListItem";
 
 const ActivityList = () => {
     
-    const rootStore = useContext<RootStore>(RootStoreContext);
+    const rootStore = useContext(RootStoreContext);
     const { activitiesByDate } = rootStore.activityStore;
 
     return (

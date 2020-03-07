@@ -22,11 +22,28 @@ export default class UserStore {
             const user = await service.user.login(values);
             runInAction(() => {
                 this.user = user;
-                history.push('/activities')
+            });
+            this.rootStore.commonStore.setToken(user.token);
+            history.push('/activities')
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    @action getUser = async () => {
+        try {
+            const user = await service.user.current();
+            runInAction(() => {
+                this.user = user;
             });
         } catch (err) {
             throw err;
-            console.error(err);
         }
+    }
+
+    @action logout = () => {
+        this.rootStore.commonStore.setToken(null);
+        this.user = null;
+        history.push('/')
     }
 }

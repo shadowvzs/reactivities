@@ -10,6 +10,8 @@ import { ToastContainer } from 'react-toastify';
 import { observer } from 'mobx-react-lite';
 import { Route, withRouter, RouteComponentProps, Switch } from "react-router-dom";
 import LoginForm from "@features/user/LoginForm";
+import RootStoreContext from "@stores/rootStore";
+import LoadingComponent from "./LoadingComponent";
 
 // NOTE: issue if we are in edit form and click toc reate form then form not reseted
 //        because not was unmounted and keep the state
@@ -19,6 +21,21 @@ import LoginForm from "@features/user/LoginForm";
 
 // <Route exact path="/(.+)" render={() => <SubComponents/> } />
 const App: React.FC<RouteComponentProps> = ({ location }) => {
+
+    const rootStore = useContext(RootStoreContext);
+    const { appLoaded, setAppLoaded, token } = rootStore.commonStore;
+    const { getUser } = rootStore.userStore;
+
+    useEffect(() => {
+        if (token) {
+            getUser().finally(() => setAppLoaded());
+        } else {
+            setAppLoaded();
+        }
+    }, [getUser, setAppLoaded, token]);
+
+    if (!appLoaded) 
+        return <LoadingComponent content='Loading app...' />;
 
     return (
         <>

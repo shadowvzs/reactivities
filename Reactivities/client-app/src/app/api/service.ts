@@ -8,6 +8,16 @@ const API_URL = 'http://172.18.0.2:4999/api';
 
 axios.defaults.baseURL = API_URL;
 
+axios.interceptors.request.use(( config ) => {
+    const token = window.localStorage.getItem('jwt');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, error => {
+    return Promise.reject(error);
+});
+
 // we have access for error informations
 // example error.response.data.errors
 axios.interceptors.response.use(undefined, error => {
@@ -55,7 +65,6 @@ const userService = {
     current: (): Promise<IUser> => requests.get('/user'),
     login: (user: IUserFormValues): Promise<IUser> => requests.post('/user/login', user),
     register: (user: IUserFormValues): Promise<IUser> => requests.post('/user/register', user),
-
 };
 
 export default {
