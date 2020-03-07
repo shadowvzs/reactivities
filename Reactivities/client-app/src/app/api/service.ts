@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { IActivity } from "@models/Activity";
+import { IUser, IUserFormValues } from "@models/User";
 import { history } from "../..";
 import { toast } from "react-toastify";
 
@@ -50,6 +51,14 @@ const activityService = {
     delete: (id: string) => requests.delete(`/activities/${id}`)
 };
 
+const userService = {
+    current: (): Promise<IUser> => requests.get('/user'),
+    login: (user: IUserFormValues): Promise<IUser> => requests.post('/user/login', user),
+    register: (user: IUserFormValues): Promise<IUser> => requests.post('/user/register', user),
+
+};
+
 export default {
-    activity: activityService
+    activity: activityService,
+    user: userService,
 };
