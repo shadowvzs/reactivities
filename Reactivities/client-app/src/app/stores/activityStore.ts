@@ -1,4 +1,3 @@
-import { createContext } from 'react';
 import { observable, action, computed, configure, runInAction } from 'mobx';
 import services from "@service";
 import { IActivity } from '@models/Activity';
@@ -6,11 +5,18 @@ import { v4 as uuid } from "uuid";
 import service from '@service';
 import { history } from "../..";
 import { toast } from 'react-toastify';
+import { RootStore } from './rootStore';
 
 // add strict mode
 configure({ enforceActions: true });
 
-class ActivityStore {
+export default class ActivityStore {
+    rootStore: RootStore;
+
+    constructor(rootStore: RootStore) {
+        this.rootStore = rootStore;
+    }
+
     @observable activityRegistry = new Map();
     @observable loadingInitial = false;
     @observable submitting = false;
@@ -146,5 +152,3 @@ decorate(ActivityStore, {
     .......................
 });
 */
-
-export default createContext(new ActivityStore());

@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
-import { Button, Label, Item, Segment } from 'semantic-ui-react'
+import { Label, Item } from 'semantic-ui-react'
 import { observer } from 'mobx-react-lite';
-import ActivityStore from "@stores/activityStore";
-import { Link } from "react-router-dom";
+import RootStoreContext, { RootStore } from "@stores/rootStore";
 import ActivityListItem from "./ActivityListItem";
 
 const ActivityList = () => {
     
-    const { activitiesByDate } = useContext(ActivityStore);
+    const rootStore = useContext<RootStore>(RootStoreContext);
+    const { activitiesByDate } = rootStore.activityStore;
 
     return (
         <>

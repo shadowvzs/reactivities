@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { ActivityFormValues, IActivity } from "@models/Activity";
 import { Segment, Form, Button, Grid } from 'semantic-ui-react'
 import { observer } from 'mobx-react-lite';
-import ActivityStore from "@stores/activityStore";
+import RootStoreContext from "@stores/rootStore";
 import { RouteComponentProps } from "react-router-dom";
 import { Form as FinalForm, Field } from "react-final-form";
 import { category } from "@common/options/categoryOptions";
@@ -29,11 +29,9 @@ const validate = combineValidators({
 type IParams = { id: string };
 const ActivityForm: React.FC<RouteComponentProps<IParams>> = ({ match, history }) => {
     
-    const { 
-        submitting, 
-        loadActivity, 
-        onCreateOrEdit, 
-    } = useContext(ActivityStore);
+    const rootStore = useContext(RootStoreContext);
+    const { submitting, loadActivity, onCreateOrEdit } = rootStore.activityStore;
+
 
     const [state, setState] = useState<ActivityFormValues>(new ActivityFormValues());
     const [loading, setLoading] = useState<boolean>(false);
