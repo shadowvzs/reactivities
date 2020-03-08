@@ -512,7 +512,7 @@ dotnet user-secrets init -p API/
 // this will be added into API.csproj file like:     <UserSecretsId>42cbc11c-9b17-4bc1-8121-8ba488e6593b</UserSecretsId>
 
 // for generate secret we will use dotnet user-secrets set "KEY" "VALUE" -p PROJECT/
-dotnet user-secrets set "TokenKey" "hurka gyurka" -p API/
+dotnet user-secrets set "TokenKey" "hurka gyurka asdasd" -p API/
 
 // we can list the existing secrets with (same way we have remove too)
 dotnet user-secrets list -p API/
@@ -572,3 +572,33 @@ dotnet user-secrets list -p API/
 // Note in controller since we dont provide params then we leave empty () after CurrentUser method name and return this way:
 // return await Mediator.Send(new CurrentUser.Query());
 
+// step 14: RELATIONSHIP - ENTITY FRAMEWORK
+// we create a relationship between users and activities (many to many) table, Domain/UserActivity.cs
+//        public string AppUserId { get; set; }
+//        public AppUser AppUser { get; set; }
+//        public Guid ActivityId { get; set; }
+//        public Activity Activity { get; set; }
+//        public DateTime DateJoined { get; set; }
+//        public bool isHost { get; set; }
+
+// adjust the AppUser.cs and into Activity.cs with
+//        public ICollection<UserActivity> UserActivities { get; set; } // using System.Collections.Generic;
+
+// we must insert also the DbSet for UserActivity in Persistence/DbContext.cs
+//  public DbSet<UserActivity> UserActivities { get; set; }
+// we declare the foreign keys
+//            builder.Entity<UserActivity>(x => x.HasKey(ua => 
+//                new { ua.AppUserId, UserActivities.Activity.id}
+//            ));
+// then we made 2 relationships:
+//            builder.Entity<UserActivity>()
+//                .HasOne(u => u.AppUser)
+//                .WithMany(a => a.UserActivities)
+//                .HasForeignKey(u => u.AppUserId);
+//            builder.Entity<UserActivity>()
+//                .HasOne(a => a.Activity)
+//                .WithMany(u => u.UserActivities)
+//                .HasForeignKey(a => a.ActivityId); 
+
+// we do migration
+dotnet ef migrations add "UserActivityAdded" -p Persistence/ -s API/
