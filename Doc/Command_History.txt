@@ -602,3 +602,31 @@ dotnet user-secrets list -p API/
 
 // we do migration
 dotnet ef migrations add "UserActivityAdded" -p Persistence/ -s API/
+
+// step 14: Save and load related entities
+// Application/Activities/Create.cs we must save the relations too, we can do that because we can access the username with IUserAccessor and save into UserActivities
+//                var user = await _context.Users.SingleOrDefaultAsync(x => 
+//                    x.UserName == _userAccessor.GetCurrentUsername());
+//                var attendee = new UserActivity
+//                {
+//                    AppUser = user,
+//                    Activity = activity,
+//                    isHost = true,
+//                    DateJoined = DateTime.Now
+//                };
+//                _context.UserActivities.Add(attendee);
+
+// Load the related entities (we use eager loading):
+// we have 3 option (https://docs.microsoft.com/en-us/ef/core/querying/related-data):
+//    - eager loading - load together with main query (.Include(x => x.RelatedEntity))
+//    - explicit loading - explicitly loaded from the database at a later time
+//    - lazy loading - related data loaded from db when navigation property is accessed
+// in Application/Activities/List.cs
+//   var activities = await _context.Activities.ToListAsync(); 
+// became
+//                var activities = await _context.Activities
+//                    .Include(x => x.UserActivities)
+//                    .ThenInclude(x => x.AppUser)
+//                    .ToListAsync();
+// NOTE: FindAsync isn't support the relationships, for that we must use SingleOrDefaultAsync
+// NOTE: We need fix the self referencing loops (activity -> useractivity->appuser->activity [<--- this is same than initial activity])
