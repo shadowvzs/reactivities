@@ -630,3 +630,32 @@ dotnet ef migrations add "UserActivityAdded" -p Persistence/ -s API/
 //                    .ToListAsync();
 // NOTE: FindAsync isn't support the relationships, for that we must use SingleOrDefaultAsync
 // NOTE: We need fix the self referencing loops (activity -> useractivity->appuser->activity [<--- this is same than initial activity])
+
+// step 14: DTO - shaping data structure from database
+// we create 2 dto into Application/Activities/ActivityDto.cs and AttendeeDto.cs
+// ActivityDto will bae same shape like Activity but also we add public ICollection<AttendeeDto> UserActivities { get; set; }
+//    but also need a [JsonPropertyName("attendees")] decorator too (System.Text.Json.Serialization)
+// AttendeeDto will be like User but also add isHost boolean property
+
+// after we created the Dto's then we go to Application/Activities/Details.cs / List.cs and at 
+// Query, Handler method and at Handle Activity will be replaced with ActivityDto
+// also we need return ActivityDto and not activity, we will do it with automapper
+
+// step 4: AUTOMAPPER - mappingActivity -> ActivityDto
+// we must isntall it in visual studio code - nuget package manager - AutoMapper - AutoMapper.Extensions.Microsoft.DependencyInjection (6.1.1) - Application project
+// we must inject into services (Startup.cs) - services.AddAutoMapper(typeof(List.Handler));
+
+// we also must create a mapping profile (where we have relationship table we need use ForMember like below)
+// Application/Activities/MappingProfile.cs
+//        public MappingProfile()
+//        {
+//            CreateMap<Activity, ActivityDto>();
+//            CreateMap<UserActivity, AttendeeDto>()
+//                .ForMember(d => d.Username, o => o.MapFrom(s => s.AppUser.UserName))
+//                .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.AppUser.DisplayName));
+//        }
+
+// inject into Details.cs/List.cs the IMapper mapper and at Handle we return 
+// return _mapper.Map<Activity, ActivityDto>(activity);
+
+// also in ActivitiesController must replace the Activity to ActivityDto
