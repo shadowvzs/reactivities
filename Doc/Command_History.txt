@@ -641,7 +641,7 @@ dotnet ef migrations add "UserActivityAdded" -p Persistence/ -s API/
 // Query, Handler method and at Handle Activity will be replaced with ActivityDto
 // also we need return ActivityDto and not activity, we will do it with automapper
 
-// step 4: AUTOMAPPER - mappingActivity -> ActivityDto
+// step 14: AUTOMAPPER - mappingActivity -> ActivityDto
 // we must isntall it in visual studio code - nuget package manager - AutoMapper - AutoMapper.Extensions.Microsoft.DependencyInjection (6.1.1) - Application project
 // we must inject into services (Startup.cs) - services.AddAutoMapper(typeof(List.Handler));
 
@@ -657,5 +657,15 @@ dotnet ef migrations add "UserActivityAdded" -p Persistence/ -s API/
 
 // inject into Details.cs/List.cs the IMapper mapper and at Handle we return 
 // return _mapper.Map<Activity, ActivityDto>(activity);
-
 // also in ActivitiesController must replace the Activity to ActivityDto
+
+// step 14: LAZY LOADER
+// for this we need a new nuget package: Microsoft.EntityFrameworkCore.Proxies - install into Persistence
+// after it is installed we must set option for lazy loading in Startup.cs - when we inject the DbContext
+// opt.UseLazyLoadingProxies(); // enable the lazy loading proxies
+
+// in Activity.cs / AppUser.cs / UserActivity.cs we must change the the relationship declaration to virtual:
+// ex. public ICollection<UserActivity> UserActivities { get; set; } => public virtual ICollection<UserActivity> UserActivities { get; set; }
+
+
+

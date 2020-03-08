@@ -74,7 +74,7 @@ namespace Application.Activities
                 {
                     AppUser = user,
                     Activity = activity,
-                    isHost = true,
+                    IsHost = true,
                     DateJoined = DateTime.Now
                 };
 
