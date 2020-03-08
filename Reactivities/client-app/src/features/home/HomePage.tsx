@@ -2,10 +2,13 @@ import React, { useContext } from "react";
 import { Container, Segment, Header, Button, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import RootStoreContext from "@stores/rootStore";
+import LoginForm from "@features/user/LoginForm";
+import RegisterForm from "@features/user/RegisterForm";
 
 const HomePage = () => {
     const rootStore = useContext(RootStoreContext);
     const { isLoggedIn, user } = rootStore.userStore;
+    const { openModal } = rootStore.modalStore;
 
     return (
         <Segment inverted textAlign='center' vertical className='masthead' >
@@ -24,10 +27,10 @@ const HomePage = () => {
                     ) : (
                         <>
                             <Header as='h2' inverted content='Welcome to Reactivities' />
-                            <Button as={Link} to='/login' size='huge' inverted>
+                            <Button onClick={() => openModal(<LoginForm />)} size='huge' inverted>
                                 Login
                             </Button>
-                            <Button as={Link} to='/register' size='huge' inverted>
+                            <Button onClick={() => openModal(<RegisterForm />)} size='huge' inverted>
                                 Register
                             </Button>                                                       
                         </>

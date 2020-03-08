@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import { observer } from 'mobx-react-lite';
 import { Route, withRouter, RouteComponentProps, Switch } from "react-router-dom";
 import LoginForm from "@features/user/LoginForm";
+import ModalContainer from "@common/modal/ModalContainer";
 import RootStoreContext from "@stores/rootStore";
 import LoadingComponent from "./LoadingComponent";
 
@@ -39,6 +40,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
 
     return (
         <>
+            <ModalContainer />
             <ToastContainer position='bottom-right' />
             <Route exact path="/" component={HomePage} />
             <Route exact path="/(.+)" render={() => (
