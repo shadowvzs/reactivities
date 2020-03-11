@@ -38,6 +38,7 @@ namespace API.Controllers
 
         // PUT api/activities/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9
         [HttpPut("{id}")]
+        [Authorize(Policy = "IsActivityHost")]
         public async Task<ActionResult<Unit>> Edit(Guid id, Edit.Command command)
         {
             command.Id = id;
@@ -46,6 +47,7 @@ namespace API.Controllers
 
         // DELETE api/activities/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9
         [HttpDelete("{id}")]
+        [Authorize(Policy = "IsActivityHost")]
         public async Task<ActionResult<Unit>> Delete(Guid id)
         {
             return await Mediator.Send(new Delete.Command{Id = id});

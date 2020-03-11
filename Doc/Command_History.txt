@@ -667,5 +667,29 @@ dotnet ef migrations add "UserActivityAdded" -p Persistence/ -s API/
 // in Activity.cs / AppUser.cs / UserActivity.cs we must change the the relationship declaration to virtual:
 // ex. public ICollection<UserActivity> UserActivities { get; set; } => public virtual ICollection<UserActivity> UserActivities { get; set; }
 
+// step 14: CUSTOM AUTH POLICY
+// create our new / custom auth class, Infrastructure/Security/IsHostRequirement.cs
+// ex. public class IsHostRequirement : IAuthorizationRequirement (using Microsoft.AspNetCore.Authorization;)
+// NOTE: we can return Task.CompletedTask; in that case when we must know if something done or not 
+
+// Startup.cs - we must add the authorization custom policy here for IHostRequirement before authentication
+//            services.AddAuthorization(opt =>
+//            {
+//                opt.AddPolicy("IsActivityHost", policy => {
+//                    policy.Requirements.Add(new IsHostRequirement());
+//                });
+//            });
+// and we add the authorization handler too
+// services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
+// then we can use like Http decorator in the controller 
+// [Authorize(Policy = "IsActivityHost")]
 
 
+// NOTE: DotNet lifecycle:
+// singleton: same instance for every request and every object where it was injected ex. services.AddSingleton<IOperationSingleton, Operation>();
+// scoped: different for every request and same every object where it was injected ex. services.AddScoped<IEmailSender, AuthMessageSender>();
+// singleton: different for each request and object where it was injected ex. services.AddTransient<IEmailSender, AuthMessageSender>();
+
+// we added seed new user and activity data but this time with relationship
+// NOTE: for me failed if tokenKey enviroment variable not was setted 
+// dotnet ef database drop -p Persistence/ -s API/
