@@ -695,6 +695,7 @@ dotnet ef migrations add "UserActivityAdded" -p Persistence/ -s API/
 // dotnet ef database drop -p Persistence/ -s API/
 
 // Step 16: cloudinary - we need register to cloudinary because we upload the files to the cloudinary
+// implementing cloudinary:
 dotnet user-secrets set "Cloudinary:CloudName" "shadowvzs"
 dotnet user-secrets set "Cloudinary:ApiKey" "213429338646934"
 dotnet user-secrets set "Cloudinary:ApiSecret" "OL85Zf_ytsH9t2IPoCup5s9h8F8"
@@ -721,5 +722,20 @@ dotnet user-secrets set "Cloudinary:ApiSecret" "OL85Zf_ytsH9t2IPoCup5s9h8F8"
 //            );
 //            _cloudinary = new Cloudinary(acc);      // using CloudinaryAspNetCore.Actions;
 //        } 
-
 // we use file.OpenReadStream() and ImageUploadParams from Cloudinary package and we upload the image this way
+
+// implementing Photo to ourside:
+// we create Domain/Photo.cs for save photo into our side too and make relationship with users in future
+// Props: Id, Url, isMain (string, string, bool
+
+// we insert Photo into AspUser table (Domain/AppUser.cs), so add this line: 
+// we extend entity with Bio property (string)
+// public virtual ICollection<Photo> Photos { get; set; }
+
+// we add into Persistence/DataContext.cs 
+// public DbSet<Photo> Photos { get; set; }
+
+// we add migrations (it will create IsHost for UserActivities), Bio for AspNetUsers and whole Photos table
+dotnet ef migrations add "PhotoEntityAdded" -p Persistence/ -s API/
+
+
