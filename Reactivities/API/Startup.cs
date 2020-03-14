@@ -4,6 +4,7 @@ using API.Middleware;
 using Domain;
 using MediatR;
 using Infrastructure.Security;
+using Infrastructure.Photos;
 using Persistence;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
@@ -88,7 +89,9 @@ namespace API
                 });
 
             services.AddScoped<IJwtGenerator, JwtGenerator>();
-            services.AddScoped<IUserAccessor, UserAccessor>();                
+            services.AddScoped<IUserAccessor, UserAccessor>();
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

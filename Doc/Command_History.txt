@@ -693,3 +693,33 @@ dotnet ef migrations add "UserActivityAdded" -p Persistence/ -s API/
 // we added seed new user and activity data but this time with relationship
 // NOTE: for me failed if tokenKey enviroment variable not was setted 
 // dotnet ef database drop -p Persistence/ -s API/
+
+// Step 16: cloudinary - we need register to cloudinary because we upload the files to the cloudinary
+dotnet user-secrets set "Cloudinary:CloudName" "shadowvzs"
+dotnet user-secrets set "Cloudinary:ApiKey" "213429338646934"
+dotnet user-secrets set "Cloudinary:ApiSecret" "OL85Zf_ytsH9t2IPoCup5s9h8F8"
+// we create Infrastructure/Photos/CloudinarySettings.cs with CloudName, ApiKey, ApiSecret string properties
+
+// insert configuration in StartUp.cs after user accessor injection, to have access for credentials from our class
+// services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary")); // using Infrastructure/Photos
+// install nuget package for cloudinary, CloudinaryDotNet into infrastructure
+
+// we create a new IPhotoAccessor (AddPhoto and DeletePhoto) into Applicaiton/Interfaces,
+// 
+
+// we create Application/Photos/PhotoUploadResult.cs (PublicId, Url string properties) interface file which is the cloudinary upload response structure
+// we create the Infrastructure/Photos/PhotoAccessor.cs too based on IPhotoAccessor interface
+// we inject accessor into Startup.cs 
+
+// then we go back to PhotoAccessor and we inject the CloudinarySetting into constructor like:
+//        public PhotoAccessor(IOptions<CloudinarySettings> config)
+//        {
+//            var acc = new Account(
+//                config.Value.CloudName,
+//                config.Value.ApiKey,
+//                config.Value.ApiSecret
+//            );
+//            _cloudinary = new Cloudinary(acc);      // using CloudinaryAspNetCore.Actions;
+//        } 
+
+// we use file.OpenReadStream() and ImageUploadParams from Cloudinary package and we upload the image this way
