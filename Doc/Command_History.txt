@@ -738,4 +738,10 @@ dotnet user-secrets set "Cloudinary:ApiSecret" "OL85Zf_ytsH9t2IPoCup5s9h8F8"
 // we add migrations (it will create IsHost for UserActivities), Bio for AspNetUsers and whole Photos table
 dotnet ef migrations add "PhotoEntityAdded" -p Persistence/ -s API/
 
+// we create add/upload handler in Application/Photos/Add.cs - this is command mediator handler which also exception because must return a photo entity (because we get image url from cloudinary and we cannot generate it from frontend)
+// we also create controller API/Controllers/PhotosController.cs
+
+// NOTE: for file upload we need use [FromForm] hint for params
+
+
 

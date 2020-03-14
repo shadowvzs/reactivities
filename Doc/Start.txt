@@ -1,8 +1,0 @@
-1st docker terminal:
-
-cd /home/shared/Reactivities/API
-dotnet watch run
-
-2nd docker terminal:
-cd /home/shared/Reactivities/client-app
-npm start && npx serve
