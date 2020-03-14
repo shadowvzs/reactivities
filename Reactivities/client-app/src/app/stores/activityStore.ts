@@ -6,6 +6,7 @@ import service from '@service';
 import { history } from "../..";
 import { toast } from 'react-toastify';
 import { RootStore } from './rootStore';
+import { setActivityProps, createAttendee } from "@common/util/util";
 
 export default class ActivityStore {
     rootStore: RootStore;
@@ -17,6 +18,7 @@ export default class ActivityStore {
     @observable activityRegistry = new Map();
     @observable loadingInitial = false;
     @observable submitting = false;
+    @observable loading = false;
     @observable activity?: IActivity;
     @observable target = '';
 
@@ -40,8 +42,9 @@ export default class ActivityStore {
             // we should add string for 1st param because should be testable easier with mobx devtool
             // since await use promise then in behind we must run every observable changes in runInAction, before await it is ok
             runInAction('loading activities', () => {
+                const user = this.rootStore.userStore.user!;
                 activities.forEach(activity => {
-                    activity.date = new Date(activity.date!);
+                    setActivityProps(activity, user);
                     this.activityRegistry.set(activity.id, activity);
                 });
             });
@@ -64,7 +67,7 @@ export default class ActivityStore {
             try {
                 activity = await service.activity.details(id);
                 runInAction('load a single activity', () => {
-                    activity.date = new Date(activity.date);
+                    setActivityProps(activity, this.rootStore.userStore.user!);
                     this.activity = activity;
                     this.activityRegistry.set(activity.id, activity);
                     this.loadingInitial = false;
@@ -110,6 +113,10 @@ export default class ActivityStore {
             try {
                 activity.id = uuid();
                 await services.activity.create(activity);
+                const attendee = createAttendee(this.rootStore.userStore.user!);
+                attendee.isHost = true;
+                activity.attendees = [ attendee ];
+                activity.isHost = true;
                 runInAction('create activity', () => {
                     this.activityRegistry.set(activity.id, activity);
                     this.activity = activity;
@@ -135,6 +142,40 @@ export default class ActivityStore {
             console.error(err);
         }
     }
+
+    @action attendActivity = async () => {
+        const attendee = createAttendee(this.rootStore.userStore.user!);
+        this.loading = true;
+        try {
+            await services.activity.attend(this.activity!.id!);
+            runInAction(() => {
+                this.activity!.attendees.push(attendee);
+                this.activity!.isGoing = true;
+                this.activityRegistry.set(this.activity!.id, this.activity);
+                this.loading = false;
+            });
+        } catch (err) {
+            runInAction(() => this.loading = false);
+            toast.error('Problem signing up to activity');
+        }
+    }
+    
+    @action cancelAttendance = async () => {
+        this.loading = true;
+        try {
+            await services.activity.unattend(this.activity!.id!);
+            runInAction(() => {
+                const user = this.rootStore.userStore.user!;
+                this.activity!.attendees = this.activity!.attendees.filter(x => x.username !== user.username);
+                this.activity!.isGoing = false;
+                this.activityRegistry.set(this.activity!.id, this.activity);
+                this.loading = false;
+            });
+        } catch (err) {
+            runInAction(() => this.loading = false);
+            toast.error('Problem at cancel activity');
+        }
+    }    
 }
 
 // another option is not using decorator in class and we use it here:

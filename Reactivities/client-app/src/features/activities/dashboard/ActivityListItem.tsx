@@ -4,24 +4,34 @@ import { observer } from 'mobx-react-lite';
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { IActivity } from "@models/Activity";
-
+import Attendees from "./ActivityListItemAttendees";
 interface ActivityListItemProps {
     activity: IActivity;
 }
 
 const ActivityListItem: React.FC<ActivityListItemProps> = ({ activity }) => {
-    
+    const host = activity.attendees.find(x => x.isHost);
     return (
         <Segment.Group>
             <Segment>
                 <Item.Group>
                     <Item>
-                        <Item.Image size='tiny' circular src={`/assets/categoryImages/${activity.category}.jpg`} />
+                        <Item.Image size='tiny' circular src={host?.image || `/assets/user.png`} />
                         <Item.Content>
-                            <Item.Header as='a'>{activity.title}</Item.Header>
+                            <Item.Header as={Link} to={`/activities/${activity.id}`}> {activity.title}</Item.Header>
                             <Item.Description>
-                                Hosted by Pista
+                                Hosted by {host?.displayName}
                             </Item.Description>
+                            { activity.isHost && (
+                                <Item.Description>
+                                    <Label basic color='orange' content='You are hosting this activity' />
+                                </Item.Description>
+                            )}
+                            { activity.isGoing && (
+                                <Item.Description>
+                                    <Label basic color='green' content='You are going to this activity' />
+                                </Item.Description>
+                            )}                            
                         </Item.Content>
                     </Item>
                 </Item.Group>
@@ -31,7 +41,7 @@ const ActivityListItem: React.FC<ActivityListItemProps> = ({ activity }) => {
                 <Icon name='marker' /> {activity.venue}, {activity.city}
             </Segment>
             <Segment secondary>
-                Attendess will go here
+                <Attendees attendees={activity.attendees} />
             </Segment>
             <Segment clearing>
                 <span>{activity.description}</span>

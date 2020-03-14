@@ -1,11 +1,11 @@
 "use strict";
 const resolveTsconfigPathsToAlias = require('./resolve-tsconfig-path-to-webpack-alias');
-const path = require("path");
 
 module.exports = {
     // Set debugging source maps to be "inline" for
     // simplicity and ease of use
-    devtool: "inline-source-map",
+    // inline-source-map option generate more megabyte plus comment in bundlejs !!!
+    devtool: "source-map",
 
     // The application entry point
     entry: "./src/index.tsx",
@@ -37,7 +37,6 @@ module.exports = {
             }
         ] 
     },
-
     // File extensions to support resolving
     resolve: {
         extensions: [".ts", ".tsx", ".js"],

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { observer } from 'mobx-react-lite';
 import { Segment, Item, Header, Button, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
+import RootStoreContext, { RootStore } from "@stores/rootStore";
 import { IActivity } from "@models/Activity";
 
 const activityImageStyle = {
@@ -24,6 +25,10 @@ interface HeaderProps {
 
 const ActivityDetailedHeader: React.FC<HeaderProps> = ({ activity }) => {
 
+    const host = activity.attendees.find(x => x.isHost);
+    const rootStore = useContext<RootStore>(RootStoreContext);
+    const { attendActivity, cancelAttendance, loading } = rootStore.activityStore;
+
     return (
         <Segment.Group>
             <Segment basic attached='top' style={{ padding: '0' }}>
@@ -39,7 +44,7 @@ const ActivityDetailedHeader: React.FC<HeaderProps> = ({ activity }) => {
                                 />
                                 <p>{format(activity.date!, 'eeee do MMMM')}</p>
                                 <p>
-                                    Hosted by <strong>Bob</strong>
+                                    Hosted by <strong>{host?.displayName}</strong>
                                 </p>
                             </Item.Content>
                             </Item>
@@ -47,11 +52,15 @@ const ActivityDetailedHeader: React.FC<HeaderProps> = ({ activity }) => {
                 </Segment>
             </Segment>
             <Segment clearing attached='bottom'>
-                <Button color='teal'>Join Activity</Button>
-                <Button>Cancel attendance</Button>
-                <Button as={Link} to={`/manage/${activity.id}`} color='orange' floated='right'>
-                    Manage Event
-                </Button>
+                { activity.isHost ? (
+                    <Button as={Link} to={`/manage/${activity.id}`} color='orange' floated='right'>
+                        Manage Event
+                    </Button>
+                ) : activity.isGoing ? (
+                    <Button loading={loading} onClick={cancelAttendance}>Cancel attendance</Button>
+                ) : (
+                    <Button loading={loading} color='teal' onClick={attendActivity}>Join Activity</Button>
+                )}
           </Segment>
         </Segment.Group>
     );
