@@ -18,7 +18,7 @@ const ErrorMessage: React.FC<IProps> = (props) => {
     return (
         <Message negative>
             <Message.Header>{error.statusText}</Message.Header>
-            {errorList.length && (
+            {!!errorList.length && (
                 <Message.List>
                     {errorList.flat().map((err: string, i: number) => (
                         <Message.Item key={i}>{err}</Message.Item>
