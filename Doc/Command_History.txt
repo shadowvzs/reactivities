@@ -740,8 +740,29 @@ dotnet ef migrations add "PhotoEntityAdded" -p Persistence/ -s API/
 
 // we create add/upload handler in Application/Photos/Add.cs - this is command mediator handler which also exception because must return a photo entity (because we get image url from cloudinary and we cannot generate it from frontend)
 // we also create controller API/Controllers/PhotosController.cs
-
 // NOTE: for file upload we need use [FromForm] hint for params
+
+// Profile - profile dto, query handler, profile controller
+// we create a new shape model into Application/Profiles/Profile.cs with 
+//        public string DisplayName { get; set; }
+//        public string UserName { get; set; }
+//        public string Image { get; set; }
+//        public string Bio { get; set; }
+//        public ICollection<Photo> Photos { get; set; }
+// we create Details.cs query handler too in this folder
+// we create ProfilesController.cs with Details function for retriving the detail data
+
+// Delete image from cloudinary in PhotoAccessor with _cloudinary.Destroy(deleteParams);
+// we create Delete command handler what need an id, check if image exist and if it is main photo or no, then delete from our database and from cloudinary with photoaccessor
+// we add into photo controller the delete endpoint
+
+// SetMainPhoto: add set main photo functionality
+// we create Application/Photos/SetMain.cs command handler where we get photo id
+// we also add this to PhotosController too
+
+// Profile mapping for user images
+// in Login.cs handler we add this when we return the User object: Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
+// same in Register.cs, CurrentUser.cs, AttendeeDto.cs (but because this is aito mapped we must change in Application/Activities/MappingProfile.cs)
 
 
 

@@ -13,12 +13,12 @@ API:
    startup (service injection) / program.cs
    appsettings.json (config)
 Application:
-   *name*/handlers.cs
+   *name*/handlers.cs - handlkers or entity modal which we use only for send back different data structure than how it is in database
    Interface/interfaces for dependency injection
    Errors/error handler
    Validators/validator extension
 Domain:
-   Entities / Models
+   Entities / Models - database structure like models - often we send shaped model and not this to frontend
 Infrastructure:
    Security (jwt, useraccessor)
    3rd Party accessors
@@ -29,6 +29,6 @@ Persistence
 
 dotnet tool install --local dotnet-ef --version 3.1.1
 dotnet user-secrets set "TokenKey" "hurka gyurka asdasd" -p API/
-dotnet user-secrets set "Cloudinary:CloudName" "shadowvzs"
-dotnet user-secrets set "Cloudinary:ApiKey" "213429338646934"
-dotnet user-secrets set "Cloudinary:ApiSecret" "OL85Zf_ytsH9t2IPoCup5s9h8F8"
+dotnet user-secrets set "Cloudinary:CloudName" "shadowvzs" -p API/
+dotnet user-secrets set "Cloudinary:ApiKey" "213429338646934" -p API/
+dotnet user-secrets set "Cloudinary:ApiSecret" "OL85Zf_ytsH9t2IPoCup5s9h8F8" -p API/

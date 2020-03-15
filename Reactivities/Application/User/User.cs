@@ -1,3 +1,5 @@
+using Application.Photos;
+
 namespace Application.User
 {
     public class User
@@ -6,5 +8,6 @@ namespace Application.User
         public string Token { get; set; }
         public string Username { get; set; }
         public string Image { get; set; }
+
     }
 }
