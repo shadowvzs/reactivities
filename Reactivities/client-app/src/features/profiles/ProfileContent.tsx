@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { Tab } from 'semantic-ui-react';
 import { IProfile } from "@models/Profile";
 import ProfilePhone from "./ProfilePhoto";
+import ProfileDescription from "./ProfileDescription";
 
 interface IProps {
     profile: IProfile;
@@ -11,7 +12,7 @@ interface IProps {
 const panes = [
     {
         menuItem: 'About',
-        render: () => <Tab.Pane> About content </Tab.Pane>
+        render: () => <ProfileDescription />
     },
     {
         menuItem: 'Photos',

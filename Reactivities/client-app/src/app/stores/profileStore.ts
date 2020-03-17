@@ -89,4 +89,21 @@ export default class ProfileStore {
             runInAction(() => this.loading = false );
         }
     }
+
+    @action updateProfile = async (profile: Partial<IProfile>) => {
+        this.loading = true;
+        try {
+            await service.profile.updateProfile(profile);
+            runInAction(() => {
+                if (profile.displayName !== this.rootStore.userStore.user!.displayName) {
+                    this.rootStore.userStore.user!.displayName = profile.displayName!;
+                }
+                this.profile = {...this.profile!, ...profile};
+            });
+        } catch (err) {
+            console.error(err);
+            toast.error('Problem changing main photo');
+            runInAction(() => this.loading = false );
+        }
+    }
 }

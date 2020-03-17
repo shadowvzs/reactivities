@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { observer } from 'mobx-react-lite';
 import { 
     Menu, 
     Container, 
@@ -48,4 +49,4 @@ const NavBar = () => {
     )
 };
 
-export default NavBar;
+export default observer(NavBar);
