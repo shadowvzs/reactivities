@@ -1,6 +1,7 @@
 using Application.Activities;
 using Application.Interfaces;
 using API.Middleware;
+using API.SignalR;
 using Domain;
 using MediatR;
 using Infrastructure.Security;
@@ -51,6 +52,7 @@ namespace API
             });
             services.AddMediatR(typeof(List.Handler).Assembly);
             services.AddAutoMapper(typeof(List.Handler));
+            services.AddSignalR();
             services.AddControllers(opt =>
             {
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
@@ -114,6 +116,7 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }

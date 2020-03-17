@@ -50,7 +50,7 @@ namespace Application.Activities
             {
                 var activity = await _context.Activities.FindAsync(request.Id);
                 if (activity == null)
-                    throw new RestException(HttpStatusCode.NotFound, new { activity = "Could not find activity" } );
+                    throw new RestException(HttpStatusCode.NotFound, new { Activity = "Could not find activity" } );
 
                 activity.Title = request.Title ?? activity.Title;
                 activity.Description = request.Description ?? activity.Description;
@@ -63,7 +63,7 @@ namespace Application.Activities
 
                 if (success) return Unit.Value;
 
-                throw new RestException(HttpStatusCode.NotFound, new { activity = "Problem saving changes" });
+                throw new RestException(HttpStatusCode.NotFound, new { Activity = "Problem saving changes" });
             }
         }
     }

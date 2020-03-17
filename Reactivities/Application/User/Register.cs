@@ -79,7 +79,7 @@ namespace Application.User
                     };
                 }
 
-                throw new RestException(HttpStatusCode.NotFound, new { activity = "Problem creating user" });
+                throw new RestException(HttpStatusCode.NotFound, new { Activity = "Problem creating user" });
             }
         }
     }

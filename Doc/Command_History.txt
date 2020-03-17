@@ -764,5 +764,45 @@ dotnet ef migrations add "PhotoEntityAdded" -p Persistence/ -s API/
 // in Login.cs handler we add this when we return the User object: Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
 // same in Register.cs, CurrentUser.cs, AttendeeDto.cs (but because this is aito mapped we must change in Application/Activities/MappingProfile.cs)
 
+// Step 19 - SignalR - Comments
+// first we create Domain/Comment.cs with their props (Id, Body, AppUser, Activity, CreateAt)
+// we must extend Activity entity here and because 1 Activity have many Comment (relationship)
+//        public virtual ICollection<Comment> Comments { get; set; }
+// Persistence/DataContext.cs we must add the new table and his entity
+//               public DbSet<Comment> Comments { get; set; }
+
+// we add migration for this new comments table
+dotnet ef migrations add "AddedCommentEntity" -p Persistence/ -s API/
+
+// we create Application/Comments/CommentDto.cs class because we want return a different object than the Comment entity
+// then because the CommentDto got different data we create automapper for resolve it (MappingProfile.cs)
+// we must add into ActivityDto.cs the public ICollection<CommentDto> Comments { get; set; }
+// we must create a Create.cs command handler for adding a new comment and load activity and user (based on UserId and ActivityId from request and map Comment to CommentDto)
+
+// step 19: SignalR
+// at Startup.cs we inject/register the signalR after the AutoMapper 
+//           services.AddSignalR();
+// but we also must create an endpoint for signalR () after the endpoints.MapControllers();
+//           endpoints.MapHub<ChatHub>("/chat");
+// for ChatHub we must create a API/SignalR/ChatHub.cs
+using Microsoft.AspNetCore.SignalR;
+
+//namespace API.SignalR
+//{
+//    public class ChatHub : Hub
+//    {
+//        private readonly IMediator _mediator;
+//        public ChatHub(IMediator mediator)
+//        {
+//            _mediator = mediator;
+//        }
+//        // until at controller the route decorator is the endpoint here the method name (ex. SendComment)
+//        public async Task SendComment(Create.Command command)
+//        {
+//           // get user name and send comment with mediator and user Clients.All.SendAsync("message", comment);
+//        }
+//    }
+//}
+
 
 

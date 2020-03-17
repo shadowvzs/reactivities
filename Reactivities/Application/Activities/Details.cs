@@ -35,7 +35,7 @@ namespace Application.Activities
                 var activity = await _context.Activities.FindAsync(request.Id);
 
                 if (activity == null)
-                    throw new RestException(HttpStatusCode.NotFound, new { activity = "Could not find activity" } );
+                    throw new RestException(HttpStatusCode.NotFound, new { Activity = "Could not find activity" } );
 
                 return _mapper.Map<Activity, ActivityDto>(activity);
             }

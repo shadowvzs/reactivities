@@ -84,7 +84,7 @@ namespace Application.Activities
 
                 if (success) return Unit.Value;
 
-                throw new RestException(HttpStatusCode.NotFound, new { activity = "Problem saving changes" });
+                throw new RestException(HttpStatusCode.NotFound, new { Activity = "Problem saving changes" });
             }
         }
     }
