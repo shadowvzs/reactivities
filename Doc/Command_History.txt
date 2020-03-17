@@ -804,5 +804,20 @@ using Microsoft.AspNetCore.SignalR;
 //    }
 //}
 
+// when we reicive the token and path is chat then we need to pass the user token inside the AddJwtBearer injection
+//                    opt.Events = new JwtBearerEvents
+//                    {
+//                        OnMessageReceived = context => 
+//                        {
+//                            var accessToken = context.Request.Query["access_token"];
+//                            var path = context.HttpContext.Request.Path;
+//                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chat"))
+//                            {
+//                                context.Token = accessToken;
+//                            }
+//                            return Task.CompletedTask;
+//                        }
+//                    };
 
 
+// Step 19: Add signalR to frontend too, npm i @microsoft/signalr
