@@ -6,6 +6,7 @@ import { history } from "../..";
 import { toast } from "react-toastify";
 
 const API_URL = 'http://172.18.0.2:4999/api';
+export const API_SIGNALR_URL = 'http://172.18.0.2:4999/chat';
 
 axios.defaults.baseURL = API_URL;
 

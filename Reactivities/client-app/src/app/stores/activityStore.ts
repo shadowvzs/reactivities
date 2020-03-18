@@ -1,5 +1,5 @@
 import { observable, action, computed, runInAction } from 'mobx';
-import services from "@service";
+import services, { API_SIGNALR_URL } from "@service";
 import { IActivity } from '@models/Activity';
 import { v4 as uuid } from "uuid";
 import service from '@service';
@@ -7,6 +7,8 @@ import { history } from "../..";
 import { toast } from 'react-toastify';
 import { RootStore } from './rootStore';
 import { setActivityProps, createAttendee } from "@common/util/util";
+import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
+import { Comment } from 'semantic-ui-react';
 
 export default class ActivityStore {
     rootStore: RootStore;
@@ -21,6 +23,59 @@ export default class ActivityStore {
     @observable loading = false;
     @observable activity?: IActivity;
     @observable target = '';
+    @observable.ref hubConnection: HubConnection | null = null;  // not make deep sub prop checking
+
+    @action createHubConnection = (activityId: string) => {
+        this.hubConnection = new HubConnectionBuilder()
+            .withUrl(API_SIGNALR_URL, {
+                accessTokenFactory: () => this.rootStore.commonStore.token!
+            })
+            .configureLogging(LogLevel.Information)
+            .build();
+        
+        this.hubConnection
+            .start()
+            .then(() => {
+                console.log('Attempting to join group');
+                this.hubConnection!.invoke('AddToGroup', activityId);
+            })
+            .then(() => console.log(this.hubConnection!.state))
+            .catch(err => console.error('Error establishing connection:', err));
+
+        this.hubConnection.on('ReceiveComment', comment => {
+            runInAction(() => {
+                this.activity!.comments.push(comment);
+            });
+        })
+
+        this.hubConnection.on('Send', message => {
+            toast.info(message);
+        })
+    }
+
+    @action stopHubConnection = () => {
+        this.hubConnection!.invoke('RemoveFromGroup', this.activity!.id)
+            .then(() => {
+                this.hubConnection!.stop();
+            })
+            .then(() => {
+                console.log('Connection stopped');
+            })
+            .catch((err) => {
+                console.log('Error', err);
+            });
+
+    }
+
+    @action addComment = async (values: any) => {
+        values.activityId = this.activity!.id;
+        try {
+            // SendComment handle was declared in backend - Api/SignalR/ChatHub.cs
+            await this.hubConnection!.invoke('SendComment', values);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     @computed get activitiesByDate() {
         return this.groupActivitiesByDate(Array.from(this.activityRegistry.values()));
@@ -116,6 +171,7 @@ export default class ActivityStore {
                 const attendee = createAttendee(this.rootStore.userStore.user!);
                 attendee.isHost = true;
                 activity.attendees = [ attendee ];
+                activity.comments = [];
                 activity.isHost = true;
                 runInAction('create activity', () => {
                     this.activityRegistry.set(activity.id, activity);

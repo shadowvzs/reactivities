@@ -819,5 +819,13 @@ using Microsoft.AspNetCore.SignalR;
 //                        }
 //                    };
 
+// since signalR handle request credentials differently, our signalR connection will fail if we don't set it in Startup.cs
+// we must change the cors policy: 
+// policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://172.18.0.2:5000").AllowCredentials();
+
+// instead of sending the comments to every client we must organise after group (each activity should have 
+// different group since chat should be different on different activity detail page)
+// we created in ChatHub.cs AddTo and RemoveFromGroup method
+
 
 // Step 19: Add signalR to frontend too, npm i @microsoft/signalr
