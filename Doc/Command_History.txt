@@ -664,7 +664,7 @@ dotnet ef migrations add "UserActivityAdded" -p Persistence/ -s API/
 // after it is installed we must set option for lazy loading in Startup.cs - when we inject the DbContext
 // opt.UseLazyLoadingProxies(); // enable the lazy loading proxies
 
-// in Activity.cs / AppUser.cs / UserActivity.cs we must change the the relationship declaration to virtual:
+// in Activity.cs / AppUser.cs / UserActivity.cs we must change the the relationship declaration to virtual (navigation property):
 // ex. public ICollection<UserActivity> UserActivities { get; set; } => public virtual ICollection<UserActivity> UserActivities { get; set; }
 
 // step 14: CUSTOM AUTH POLICY
@@ -827,5 +827,34 @@ using Microsoft.AspNetCore.SignalR;
 // different group since chat should be different on different activity detail page)
 // we created in ChatHub.cs AddTo and RemoveFromGroup method
 
-
 // Step 19: Add signalR to frontend too, npm i @microsoft/signalr
+
+
+// Step 20: Follower and following
+// this is Many to Many relationship and because of this we create a table for relationship - UserFollowing
+// so we create Domain/UserFollowing.cs - ObserverId (string), Observer(AppUser), TargetId (string) Target (AppUser)
+
+// we must extend the AppUser with 2 new virtual property collection (<UserFollowing> - Followings, Followers)
+
+// Persistence/DataContext.cs - we add DbSet for UserFollowing - public DbSet<UserFollowing> Followings { get; set; }
+// we also must also create relationship with foreign keys
+     
+//            builder.Entity<UserFollowing>(b => 
+//            {
+//                b.HasKey(k => new { k.ObserverId, k.TargetId });
+//                b.HasOne(o => o.Observer)
+//                    .WithMany(f => f.Followings)
+//                    .HasForeignKey(o => o.ObserverId)
+//                    .OnDelete(DeleteBehavior.Restrict);
+//                b.HasOne(o => o.Target)
+//                    .WithMany(f => f.Followers)
+//                    .HasForeignKey(o => o.TargetId)
+//                    .OnDelete(DeleteBehavior.Restrict);
+//            });
+
+// then we do migration about database changes
+dotnet ef migrations add "AddedFollowingEntity" -p Persistence/ -s API/
+
+// Step 20: Add Follower handler
+// We create Application/Followers/Add.cs and Delete.cs command handlers and Api/Controllers/FollowersController.cs
+

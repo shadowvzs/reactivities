@@ -32,3 +32,9 @@ dotnet user-secrets set "TokenKey" "hurka gyurka asdasd" -p API/
 dotnet user-secrets set "Cloudinary:CloudName" "shadowvzs" -p API/
 dotnet user-secrets set "Cloudinary:ApiKey" "213429338646934" -p API/
 dotnet user-secrets set "Cloudinary:ApiSecret" "OL85Zf_ytsH9t2IPoCup5s9h8F8" -p API/
+
+dotnet tool install --local dotnet-ef --version 3.1.1 && 
+dotnet user-secrets set "TokenKey" "hurka gyurka asdasd" -p API/ && 
+dotnet user-secrets set "Cloudinary:CloudName" "shadowvzs" -p API/ && 
+dotnet user-secrets set "Cloudinary:ApiKey" "213429338646934" -p API/ && 
+dotnet user-secrets set "Cloudinary:ApiSecret" "OL85Zf_ytsH9t2IPoCup5s9h8F8" -p API/
