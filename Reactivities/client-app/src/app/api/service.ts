@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { IActivity } from "@models/Activity";
+import { IActivity, IActivitiesEnvelope } from "@models/Activity";
 import { IUser, IUserFormValues } from "@models/User";
 import { IProfile, IPhoto } from "@models/Profile";
 import { history } from "../..";
@@ -63,7 +63,7 @@ const requests = {
 };
 
 const activityService = {
-    list: (): Promise<IActivity[]> => requests.get('/activities'),
+    list: (limit?: number, page?: number): Promise<IActivitiesEnvelope> => requests.get(`/activities?limit=${limit}&offset=${page ? page * limit! : 0}`),
     details: (id: string) => requests.get(`/activities/${id}`),
     create: (activity: IActivity) => requests.post(`/activities`, activity),
     update: (activity: IActivity) => requests.put(`/activities/${activity.id}`, activity),

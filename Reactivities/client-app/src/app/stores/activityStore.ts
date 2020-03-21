@@ -1,6 +1,6 @@
 import { observable, action, computed, runInAction } from 'mobx';
 import services, { API_SIGNALR_URL } from "@service";
-import { IActivity } from '@models/Activity';
+import { IActivity, IActivitiesEnvelope } from '@models/Activity';
 import { v4 as uuid } from "uuid";
 import service from '@service';
 import { history } from "../..";
@@ -8,7 +8,8 @@ import { toast } from 'react-toastify';
 import { RootStore } from './rootStore';
 import { setActivityProps, createAttendee } from "@common/util/util";
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
-import { Comment } from 'semantic-ui-react';
+
+const LIMIT = 2;
 
 export default class ActivityStore {
     rootStore: RootStore;
@@ -24,6 +25,16 @@ export default class ActivityStore {
     @observable activity?: IActivity;
     @observable target = '';
     @observable.ref hubConnection: HubConnection | null = null;  // not make deep sub prop checking
+    @observable activityCount = 0;
+    @observable page = 0;
+
+    @computed get totalPages() {
+        return Math.ceil(this.activityCount / LIMIT);
+    }
+
+    @action setPage = (page: number) => {
+        this.page = page;
+    }
 
     @action createHubConnection = (activityId: string) => {
         this.hubConnection = new HubConnectionBuilder()
@@ -93,13 +104,14 @@ export default class ActivityStore {
     @action loadActivities = async () => {
         this.loadingInitial = true;
         try {
-            const activities = await services.activity.list();
+            const { activities, totalCount } = await services.activity.list(LIMIT, this.page);
             // we should add string for 1st param because should be testable easier with mobx devtool
             // since await use promise then in behind we must run every observable changes in runInAction, before await it is ok
             runInAction('loading activities', () => {
                 const user = this.rootStore.userStore.user!;
                 activities.forEach(activity => {
                     setActivityProps(activity, user);
+                    this.activityCount = totalCount;
                     this.activityRegistry.set(activity.id, activity);
                 });
             });
