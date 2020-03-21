@@ -16,9 +16,9 @@ namespace API.Controllers
 
         // GET api/activities/
         [HttpGet]
-        public async Task<ActionResult<List<ActivityDto>>> List()
+        public async Task<ActionResult<List.ActivitiesEnvelope>> List(int? limit, int? offset)
         {
-            return await Mediator.Send(new List.Query());
+            return await Mediator.Send(new List.Query(limit, offset));
         }
 
         // GET /api/activities/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9

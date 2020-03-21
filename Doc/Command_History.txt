@@ -932,3 +932,19 @@ dotnet ef migrations add "AddedFollowingEntity" -p Persistence/ -s API/
 
 // and in AutoMapperProfile.cs we just use this resolver this way:
 //      .ForMember(d => d.Following, o => o.MapFrom<FollowingResolver>());
+
+// Note: QUERYABLE
+// query variable stores query commands
+// IQueryable<T> crea an expression tree
+// Execution deffered until iteration (so query fired when we use the followings):
+//    Foreach, ToList(), ToArray(), ToDictionary()
+//    Singlet ton queries ( Count, Average etc )
+// examples:
+// var queryable = _context.Activities
+//        .Where(x => x.Date >= request.StartDate)
+//        .OrderBy(x => x.Date)
+//        .AsQueryable();
+// var activities = await queryable
+//        .Skip(request.Offset ?? 0)
+//        .Take(request.Limit ?? 3)
+//        .ToLostAsync();
