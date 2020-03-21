@@ -1,4 +1,4 @@
-import { observable, action, computed, runInAction } from 'mobx';
+import { observable, action, computed, runInAction, reaction } from 'mobx';
 import { IProfile, IPhoto } from '@models/Profile';
 import service from '@service';
 import { RootStore } from './rootStore';
@@ -9,17 +9,32 @@ export default class ProfileStore {
 
     constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
+
+        reaction(() => this.activeTab, (activeTab) => {
+            if (activeTab === 3 || activeTab === 4) {
+                const predicate = activeTab === 4 ? 'following' : 'followers';
+                this.loadFollowings(predicate);
+            } else {
+                this.followings = [];
+            }
+        });
     }
 
     @observable profile: IProfile | null = null;
     @observable loadingProfile = true;
     @observable uploadingPhoto = false;
     @observable loading = false;
+    @observable followings: IProfile[] = [];
+    @observable activeTab: number = 0;
     
     @computed get isCurrentUser() {
         const user = this.rootStore.userStore.user;
         return this.profile && user && this.profile.username === user.username;
     }
+
+    @action setActiveTab = (activeIndex: number) => {
+        this.activeTab = activeIndex;
+    };
 
     @action loadProfile = async (username: string) => {
         this.loadingProfile = true;
@@ -106,4 +121,56 @@ export default class ProfileStore {
             runInAction(() => this.loading = false );
         }
     }
+
+    @action unfollow = async (username: string) => {
+        this.loading = true;
+        try {
+            await service.profile.unfollow(username);
+            runInAction(() => {
+                this.profile!.following = false;
+                this.profile!.followersCount--;
+                this.loading = false;
+            });
+        } catch (err) {
+            toast.error('Problem unfollowing user');
+            runInAction(() => {
+                this.loading = false;
+            });
+        }
+    };
+
+
+    @action follow = async (username: string) => {
+        this.loading = true;
+        try {
+            await service.profile.follow(username);
+            runInAction(() => {
+                this.profile!.following = true;
+                this.profile!.followersCount++;
+                this.loading = false;
+            });
+        } catch (err) {
+            toast.error('Problem following user');
+            runInAction(() => {
+                this.loading = false;
+            });
+        }
+    };
+
+
+    @action loadFollowings = async (predicate: string) => {
+        this.loading = true;
+        try {
+            const profiles = await service.profile.listFollowings(this.profile!.username, predicate);
+            runInAction(() => {
+                this.followings = profiles;
+                this.loading = false;
+            });
+        } catch (err) {
+            toast.error('Problem loading following user profiles');
+            runInAction(() => {
+                this.loading = false;
+            });
+        }
+    };
 }

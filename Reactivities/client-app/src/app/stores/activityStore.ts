@@ -231,7 +231,7 @@ export default class ActivityStore {
             runInAction(() => this.loading = false);
             toast.error('Problem at cancel activity');
         }
-    }    
+    }
 }
 
 // another option is not using decorator in class and we use it here:

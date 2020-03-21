@@ -7,6 +7,11 @@ interface Props {
     attendees: IAttendee[];
 }
 
+const followingStyle = {
+    borderColor: 'orange',
+    borderWidth: 2
+};
+
 const ActivityList: React.FC<Props> = ({ attendees }) => {
     
     return (
@@ -15,7 +20,15 @@ const ActivityList: React.FC<Props> = ({ attendees }) => {
                 <List.Item key={x.username}>
                     <Popup 
                         header={x.displayName}
-                        trigger={<Image size='mini' circular src={x.image || '/assets/user.png'} />}
+                        trigger={(
+                            <Image 
+                                size='mini' 
+                                circular 
+                                src={x.image || '/assets/user.png'} 
+                                bordered
+                                style={x.following ? followingStyle : undefined}
+                            />
+                        )}
                     />
                 </List.Item>
             ))}
