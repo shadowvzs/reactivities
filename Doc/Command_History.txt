@@ -259,6 +259,11 @@ dotnet watch run
 // return Ok(values); - return http response with code 200 instead of normal value
 // await _context.Values.FindAsync(id); - FindAsync use the primary key and return null if not exist
 
+// NOTE: async vs non async
+// const user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUsername());
+// vs
+// const user = _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUsername()).Result;
+
 // NOTE 5. Added Cors support in API/Startup.cs - ConfigureService
 //            services.AddCors(opt =>
 //            {
@@ -858,3 +863,72 @@ dotnet ef migrations add "AddedFollowingEntity" -p Persistence/ -s API/
 // Step 20: Add Follower handler
 // We create Application/Followers/Add.cs and Delete.cs command handlers and Api/Controllers/FollowersController.cs
 
+// Profile helper for followers, we create:
+// Application/Profiles/IProfileReader.cs and ProfileReader.cs
+// extend Profile.cs with: 
+//        public bool IsFollowed { get; set; } with decorator ([JsonPropertyName("following")])
+//        public int FollowersCount { get; set; }
+//        public int FollowingCount { get; set; }
+
+// we inject this IProfileReader/ProfileReader into Startup.cs - services.AddScoped<IProfileReader, ProfileReader>();
+
+// we create Application/Followers/List.cs query handle to get the followers list
+//     // create just a list without populating it or do query in db, just type
+//     var queryable = _context.Followings.AsQueryable();
+
+// Foreach and adding things into array
+//                var userFollowings = new List<UserFollowing>();
+//                var profiles = new List<Profile>(); 
+//                switch(request.Predicate)
+//                {
+//                    case "follower":
+//                    {
+//                        userFollowings = await queryable.Where(x => x.Observer.UserName == request.Username).ToListAsync();
+//                        foreach(var follower in userFollowings)
+//                        {
+//                            profiles.Add(await _profileReader.ReadProfile(follower.Target.UserName));
+//                        }
+//                        break;
+//                    }
+//                }
+// After that we must add this (List) to FollowersController.cs
+
+// we extend the Attendee.cs model with: public bool Following {get; set; }
+
+// we create FollowingResolver.cs to solve the mapping issue in mapping profile since we have no access to Users following relationship
+// we this method we should inject additional data into automapper profile
+// and we extend the MappingProfile.cs
+
+// using AutoMapper;
+// using Persistence;
+// using Microsoft.EntityFrameworkCore;
+// using Application.Interfaces;
+// using Domain;
+// using System.Threading;
+// using System.Threading.Tasks;
+// using System.Linq;
+//
+// namespace Application.Activities
+// {
+//    public class FollowingResolver : IValueResolver<UserActivity, AttendeeDto, bool>
+//    {
+//        private readonly DataContext _context;
+//        private readonly IUserAccessor _userAccessor;
+//        public FollowingResolver(DataContext context, IUserAccessor userAccessor)
+//        {
+//            _userAccessor = userAccessor;
+//            _context = context;
+//        }
+//
+//        public bool Resolve(UserActivity source, AttendeeDto destination, bool destMember, ResolutionContext context)
+//        {
+//            var currentUser = _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUsername()).Result;
+//            if (currentUser.Followings.Any(x => x.TargetId == source.AppUserId))
+//                return true;
+//            return false;
+//        }
+//    }
+// }
+
+// and in AutoMapperProfile.cs we just use this resolver this way:
+//      .ForMember(d => d.Following, o => o.MapFrom<FollowingResolver>());

@@ -1,7 +1,6 @@
 using MediatR;
 using Domain;
 using Persistence;
-using Microsoft.EntityFrameworkCore;
 using Application.Errors;
 
 using System.Net;
@@ -21,28 +20,16 @@ namespace Application.Profiles
 
         public class Handler : IRequestHandler<Query, Profile>
         {
-            private readonly DataContext _context;
+            private readonly IProfileReader _profileReader;
 
-            public Handler(DataContext context)
+            public Handler(IProfileReader profileReader)
             {
-                _context = context;
+                _profileReader = profileReader;
             }
 
             public async Task<Profile> Handle(Query request, CancellationToken cancellationToken)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.Username );
-
-                if (user == null)
-                    throw new RestException(HttpStatusCode.NotFound, new { user = "Could not find user" } );
-
-                return new Profile
-                {
-                    DisplayName = user.DisplayName,
-                    Username = user.UserName,
-                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
-                    Photos = user.Photos,
-                    Bio = user.Bio
-                };
+                return await _profileReader.ReadProfile(request.Username);
             }
         }
     }
