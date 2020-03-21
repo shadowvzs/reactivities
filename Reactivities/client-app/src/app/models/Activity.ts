@@ -1,6 +1,6 @@
 export interface IActivitiesEnvelope {
     activities: IActivity[],
-    totalCount: number;
+    activityCount: number;
 }
 
 export interface IActivity {

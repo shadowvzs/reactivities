@@ -104,14 +104,14 @@ export default class ActivityStore {
     @action loadActivities = async () => {
         this.loadingInitial = true;
         try {
-            const { activities, totalCount } = await services.activity.list(LIMIT, this.page);
+            const { activities, activityCount } = await services.activity.list(LIMIT, this.page);
             // we should add string for 1st param because should be testable easier with mobx devtool
             // since await use promise then in behind we must run every observable changes in runInAction, before await it is ok
             runInAction('loading activities', () => {
                 const user = this.rootStore.userStore.user!;
                 activities.forEach(activity => {
                     setActivityProps(activity, user);
-                    this.activityCount = totalCount;
+                    this.activityCount = activityCount;
                     this.activityRegistry.set(activity.id, activity);
                 });
             });

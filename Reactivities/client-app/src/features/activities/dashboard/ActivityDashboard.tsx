@@ -1,25 +1,40 @@
-import React, { useEffect, useContext } from "react";
-import { Grid } from 'semantic-ui-react'
+import React, { useEffect, useState, useContext } from "react";
+import { Grid, Button } from 'semantic-ui-react'
 import ActivityList from './ActivityList';
 import { observer } from 'mobx-react-lite';
 import LoadingComponent from "@layout/LoadingComponent";
 import RootStoreContext from "@stores/rootStore";
+import InfiniteScroll from 'react-infinite-scroller';
 
 const ActivityDashboard = () => {
 
     const { activityStore } = useContext(RootStoreContext);
-    const { loadingInitial, loadActivities } = activityStore;
+    const { loadingInitial, loadActivities, setPage, page, totalPages } = activityStore;
+    const [loadingNext, setLoadingNext] = useState(false);
+
+    const handleGetNext = () => {
+        setLoadingNext(true);
+        setPage(page + 1);
+        loadActivities().then(() => setLoadingNext(false));
+    }
 
     useEffect(() => {
         loadActivities();
     }, [loadActivities]);
 
-    if (loadingInitial) return <LoadingComponent content='Loading activities' />;
+    if (loadingInitial && page === 0) return <LoadingComponent content='Loading activities' />;
 
     return (
         <Grid>
             <Grid.Column width={10}>
-                <ActivityList />
+                <InfiniteScroll
+                    pageStart={0}
+                    loadMore={handleGetNext}
+                    hasMore={!loadingNext && (page + 1 !== totalPages)}
+                    initialLoad={false}
+                >
+                    <ActivityList />
+                </InfiniteScroll>
             </Grid.Column>
         </Grid>
     )
