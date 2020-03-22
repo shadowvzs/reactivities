@@ -172,7 +172,7 @@ export default class ActivityStore {
                 console.log(err);
             }            
         }
-        return activity
+        return activity;
     }
 
     getActivity = (id: string) => {
