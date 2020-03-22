@@ -54,7 +54,7 @@ namespace API
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .WithExposedHeaders("WWW-Authenticate")
-                        .WithOrigins("http://172.18.0.2:5000")
+                        .WithOrigins("http://172.18.0.2:3000")
                         .AllowCredentials();
                 });
             });

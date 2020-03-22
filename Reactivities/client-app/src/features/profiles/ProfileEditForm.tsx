@@ -2,10 +2,10 @@ import React from "react";
 import { Form, Header, Button } from 'semantic-ui-react'
 import { observer } from 'mobx-react-lite';
 import { Form as FinalForm, Field } from "react-final-form";
-import TextInput from "@common/form/TextInput";
+import TextInput from "src/app/common/form/TextInput";
 import { combineValidators, isRequired } from "revalidate";
-import { IProfile } from "@models/Profile";
-import TextAreaInput from "@common/form/TextAreaInput";
+import { IProfile } from "src/app/models/Profile";
+import TextAreaInput from "src/app/common/form/TextAreaInput";
 
 const validate = combineValidators({
     displayName: isRequired('displayName'),

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Tab, Header, Card, Image, Button, Grid } from 'semantic-ui-react';
-import RootStoreContext from "@stores/rootStore";
+import { Tab, Header, Button, Grid } from 'semantic-ui-react';
+import RootStoreContext from "src/app/stores/rootStore";
 import ProfileEditForm from "./ProfileEditForm";
 
 const ProfileDescription: React.FC = () => {

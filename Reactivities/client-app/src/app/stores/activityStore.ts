@@ -1,12 +1,12 @@
 import { observable, action, computed, runInAction, reaction } from 'mobx';
-import services, { API_SIGNALR_URL } from "@service";
-import { IActivity, IActivitiesEnvelope } from '@models/Activity';
+import services, { API_SIGNALR_URL } from "src/app/api/service";
+import { IActivity, IComment } from 'src/app/models/Activity';
 import { v4 as uuid } from "uuid";
-import service from '@service';
+import service from 'src/app/api/service';
 import { history } from "../..";
 import { toast } from 'react-toastify';
 import { RootStore } from './rootStore';
-import { setActivityProps, createAttendee } from "@common/util/util";
+import { setActivityProps, createAttendee } from "src/app/common/util/util";
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 
 const LIMIT = 2;
@@ -19,7 +19,7 @@ export default class ActivityStore {
 
         reaction(() => this.predicate.keys(), () => {
             this.page = 0;
-            this,this.activityRegistry.clear();
+            this.activityRegistry.clear();
             this.loadActivities();
         });
     }
@@ -79,15 +79,15 @@ export default class ActivityStore {
                 this.hubConnection!.invoke('AddToGroup', activityId);
             })
             .then(() => console.log(this.hubConnection!.state))
-            .catch(err => console.error('Error establishing connection:', err));
+            .catch((err: string) => console.error('Error establishing connection:', err));
 
-        this.hubConnection.on('ReceiveComment', comment => {
+        this.hubConnection.on('ReceiveComment', (comment: IComment) => {
             runInAction(() => {
                 this.activity!.comments.push(comment);
             });
         })
 
-        this.hubConnection.on('Send', message => {
+        this.hubConnection.on('Send', (message: string) => {
             toast.info(message);
         })
     }
@@ -100,7 +100,7 @@ export default class ActivityStore {
             .then(() => {
                 console.log('Connection stopped');
             })
-            .catch((err) => {
+            .catch((err: string) => {
                 console.log('Error', err);
             });
 

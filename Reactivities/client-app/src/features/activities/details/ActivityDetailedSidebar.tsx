@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { observer } from 'mobx-react-lite';
 import { Segment, List, Item, Label, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import { IAttendee } from "@models/Activity";
+import { IAttendee } from "src/app/models/Activity";
 
 interface Props {
     attendees: IAttendee[];

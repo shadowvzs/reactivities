@@ -1,6 +1,6 @@
 import { observable, action, computed, runInAction } from 'mobx';
-import { IUser, IUserFormValues } from '@models/User';
-import service from '@service';
+import { IUser, IUserFormValues } from 'src/app/models/User';
+import service from 'src/app/api/service';
 import { RootStore } from './rootStore';
 import { history } from "../..";
 

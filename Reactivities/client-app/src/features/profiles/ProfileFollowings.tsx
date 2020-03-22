@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Tab, Grid, Header, Card } from 'semantic-ui-react';
-import RootStoreContext from "@stores/rootStore";
+import RootStoreContext from "src/app/stores/rootStore";
 import ProfileCard from './ProfileCard';
 
 const ProfileFollowings = () => {

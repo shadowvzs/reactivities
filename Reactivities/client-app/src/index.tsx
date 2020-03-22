@@ -10,7 +10,7 @@ import "./app/layout/style.css";
 
 export const history = createBrowserHistory();
 
-dateFnsLocalizer()
+dateFnsLocalizer();
 
 ReactDOM.render(
     <Router history={history}>

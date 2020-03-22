@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
 import { Form, Header, Button } from 'semantic-ui-react'
 import { observer } from 'mobx-react-lite';
-import RootStoreContext from "@stores/rootStore";
+import RootStoreContext from "src/app/stores/rootStore";
 import { Form as FinalForm, Field } from "react-final-form";
-import TextInput from "@common/form/TextInput";
-import { IUserFormValues } from "@models/User";
+import TextInput from "src/app/common/form/TextInput";
+import { IUserFormValues } from "src/app/models/User";
 import { FORM_ERROR } from "final-form";
 import { combineValidators, isRequired } from "revalidate";
-import ErrorMessage from "@common/form/ErrorMessage";
+import ErrorMessage from "src/app/common/form/ErrorMessage";
 
 const validate = combineValidators({
     email: isRequired('email'),

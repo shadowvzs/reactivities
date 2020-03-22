@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
-import RootStoreContext, { RootStore } from "@stores/rootStore";
+import RootStoreContext, { RootStore } from "src/app/stores//rootStore";
 import { observer } from 'mobx-react-lite';
-import LoadingComponent from "@layout/LoadingComponent";
+import LoadingComponent from "src/app/layout/LoadingComponent";
 import { RouteComponentProps } from "react-router-dom";
 import ActivityDetailedHeader from "./ActivityDetailedHeader";
 import ActivityDetailedInfo from "./ActivityDetailedInfo";

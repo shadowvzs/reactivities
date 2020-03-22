@@ -1,18 +1,18 @@
 import React, { useEffect, useContext } from "react";
 import { Container } from 'semantic-ui-react'
-import NavBar from "@features/nav/NavBar";
-import ActivityDashboard from "@features/activities/dashboard/ActivityDashboard";
-import ActivityForm from "@features/activities/form/ActivityForm";
-import ActivityDetails from "@features/activities/details/ActivityDetails";
-import HomePage from "@features/home/HomePage";
-import ProfilePage from "@features/profiles/ProfilePage";
+import NavBar from "src/features/nav/NavBar";
+import ActivityDashboard from "src/features/activities/dashboard/ActivityDashboard";
+import ActivityForm from "src/features/activities/form/ActivityForm";
+import ActivityDetails from "src/features/activities/details/ActivityDetails";
+import HomePage from "src/features/home/HomePage";
+import ProfilePage from "src/features/profiles/ProfilePage";
 import NotFound from "./NotFound";
 import { ToastContainer } from 'react-toastify';
 import { observer } from 'mobx-react-lite';
 import { Route, withRouter, RouteComponentProps, Switch } from "react-router-dom";
-import ModalContainer from "@common/modal/ModalContainer";
+import ModalContainer from "src/app/common/modal/ModalContainer";
 import PrivateRoute from "./PrivateRoute";
-import RootStoreContext from "@stores/rootStore";
+import RootStoreContext from "src/app/stores/rootStore";
 import LoadingComponent from "./LoadingComponent";
 
 // NOTE: issue if we are in edit form and click toc reate form then form not reseted

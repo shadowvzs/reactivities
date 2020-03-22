@@ -8,7 +8,7 @@ import {
     Dropdown
 } from 'semantic-ui-react'
 import { NavLink, Link } from "react-router-dom";
-import RootStoreContext from "@stores/rootStore";
+import RootStoreContext from "src/app/stores/rootStore";
 
 const menuList = [
     {

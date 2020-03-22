@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Menu, Header } from 'semantic-ui-react';
 import { Calendar } from 'react-widgets';
-import RootStoreContext from "@stores/rootStore";
+import RootStoreContext from "src/app/stores/rootStore";
 import { observer } from 'mobx-react-lite';
 
 const ActivityFilters = () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Image, Icon} from 'semantic-ui-react';
-import { IProfile } from '@models/Profile';
+import { IProfile } from 'src/app/models/Profile';
 import { Link } from 'react-router-dom';
 
 interface IProps {

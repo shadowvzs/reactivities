@@ -1,27 +1,34 @@
 {
-    "compilerOptions": {
-        "module": "esnext",
-        "moduleResolution": "node",
-        "jsx": "react",
-        "strict": true,
-        "removeComments": true,
-        "esModuleInterop": true,
-        "target": "es6",
-        "experimentalDecorators": true,
-        "lib": ["es2015", "dom", "dom.iterable"],
-        "sourceMap": true,
-        "baseUrl": "src",
-        "paths": {
-            "@common/*":   ["app/common/*"],
-            "@layout/*":   ["app/layout/*"],
-            "@models/*":   ["app/models/*"],
-            "@features/*": ["features/*"],
-            "@service":    ["app/api/service.ts"],
-            "@stores/*":   ["app/stores/*"]
-        },
-        "typeRoots": [
-            "./node_modules/@types",
-            "./typings-custom"
-        ]        
-    }
+  "extends": "./tsconfig.paths.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "strict": true,
+    "removeComments": true,
+    "esModuleInterop": true,
+    "target": "es6",
+    "experimentalDecorators": true,
+    "lib": [
+      "es2015",
+      "dom",
+      "dom.iterable"
+    ],
+    "baseUrl": "./",
+    "sourceMap": true,
+    "typeRoots": [
+      "src/typings-custom",
+      "./typings-custom/*"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": [
+    "src"
+  ]
 }

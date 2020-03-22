@@ -1,16 +1,16 @@
 import React, { useState, useContext, useEffect } from "react";
-import { ActivityFormValues, IActivity } from "@models/Activity";
+import { ActivityFormValues, IActivity } from "src/app/models/Activity";
 import { Segment, Form, Button, Grid } from 'semantic-ui-react'
 import { observer } from 'mobx-react-lite';
-import RootStoreContext from "@stores/rootStore";
+import RootStoreContext from "src/app/stores/rootStore";
 import { RouteComponentProps } from "react-router-dom";
 import { Form as FinalForm, Field } from "react-final-form";
-import { category } from "@common/options/categoryOptions";
-import TextInput from "@common/form/TextInput";
-import TextAreaInput from "@common/form/TextAreaInput";
-import SelectInput from "@common/form/SelectInput";
-import DateInput from "@common/form/DateInput";
-import { combineDateAndTime } from "@common/util/util";
+import { category } from "src/app/common/options/categoryOptions";
+import TextInput from "src/app/common/form/TextInput";
+import TextAreaInput from "src/app/common/form/TextAreaInput";
+import SelectInput from "src/app/common/form/SelectInput";
+import DateInput from "src/app/common/form/DateInput";
+import { combineDateAndTime } from "src/app/common/util/util";
 import { combineValidators, isRequired, composeValidators, hasLengthGreaterThan } from "revalidate";
 
 const validate = combineValidators({
@@ -44,7 +44,7 @@ const ActivityForm: React.FC<RouteComponentProps<IParams>> = ({ match, history }
                 setLoading(false);
             });
         }
-    }, [match.params.id, loadActivity]);
+    }, [match.params.id, loadActivity, state.id]);
 
     const onSubmit = (values: ActivityFormValues) => {
         const { date, time, ...rest } = values;

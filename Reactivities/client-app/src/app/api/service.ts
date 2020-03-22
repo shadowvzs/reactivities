@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
-import { IActivity, IActivitiesEnvelope } from "@models/Activity";
-import { IUser, IUserFormValues } from "@models/User";
-import { IProfile, IUserActivity, IPhoto } from "@models/Profile";
+import { IActivity, IActivitiesEnvelope } from "src/app/models/Activity";
+import { IUser, IUserFormValues } from "src/app/models/User";
+import { IProfile, IUserActivity, IPhoto } from "src/app/models/Profile";
 import { history } from "../..";
 import { toast } from "react-toastify";
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { List, Image, Popup } from 'semantic-ui-react'
 import { observer } from 'mobx-react-lite';
-import { IAttendee } from "@models/Activity";
+import { IAttendee } from "src/app/models/Activity";
 
 interface Props {
     attendees: IAttendee[];

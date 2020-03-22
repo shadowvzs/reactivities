@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { Container, Segment, Header, Button, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import RootStoreContext from "@stores/rootStore";
-import LoginForm from "@features/user/LoginForm";
-import RegisterForm from "@features/user/RegisterForm";
+import RootStoreContext from "src/app/stores/rootStore";
+import LoginForm from "src/features/user/LoginForm";
+import RegisterForm from "src/features/user/RegisterForm";
 
 const HomePage = () => {
     const token = window.localStorage.getItem('jwt');

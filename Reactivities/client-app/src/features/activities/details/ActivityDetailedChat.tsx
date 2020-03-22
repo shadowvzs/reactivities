@@ -2,9 +2,9 @@ import React, { useContext, Fragment, useEffect } from "react";
 import { observer } from 'mobx-react-lite';
 import { Segment, Header, Form, Button, Comment } from "semantic-ui-react";
 import { Form as FinalForm, Field } from 'react-final-form';
-import RootStoreContext, { RootStore } from "@stores/rootStore";
+import RootStoreContext, { RootStore } from "src/app/stores//rootStore";
 import { Link } from "react-router-dom";
-import TextAreaInput from "@common/form/TextAreaInput";
+import TextAreaInput from "src/app/common/form/TextAreaInput";
 import { formatDistance } from 'date-fns';
 
 const ActivityDetailedChat: React.FC = () => {

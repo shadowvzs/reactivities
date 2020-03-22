@@ -1,10 +1,10 @@
 import React, { useContext, useEffect } from "react";
 import { observer } from 'mobx-react-lite';
 import { Grid } from "semantic-ui-react";
-import RootStoreContext from "@stores/rootStore";
+import RootStoreContext from "src/app/stores/rootStore";
 import ProfileHeader from "./ProfileHeader";
 import ProfileContent from "./ProfileContent";
-import LoadingComponent from "@layout/LoadingComponent";
+import LoadingComponent from "src/app/layout/LoadingComponent";
 import { RouteComponentProps } from "react-router-dom";
 
 interface RouteParams {

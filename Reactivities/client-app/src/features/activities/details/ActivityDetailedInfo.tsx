@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from 'mobx-react-lite';
 import { Segment, Grid, Icon } from "semantic-ui-react";
-import { IActivity } from "@models/Activity";
+import { IActivity } from "src/app/models/Activity";
 import { format } from "date-fns";
 
 interface HeaderProps {

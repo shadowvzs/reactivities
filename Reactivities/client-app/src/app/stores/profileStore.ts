@@ -1,6 +1,6 @@
 import { observable, action, computed, runInAction, reaction } from 'mobx';
-import { IProfile, IPhoto, IUserActivity } from '@models/Profile';
-import service from '@service';
+import { IProfile, IPhoto, IUserActivity } from 'src/app/models/Profile';
+import service from 'src/app/api/service';
 import { RootStore } from './rootStore';
 import { toast } from 'react-toastify';
 

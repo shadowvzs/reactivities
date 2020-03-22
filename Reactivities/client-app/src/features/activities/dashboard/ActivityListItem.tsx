@@ -3,7 +3,7 @@ import { Button, Label, Item, Segment, Icon } from 'semantic-ui-react'
 import { observer } from 'mobx-react-lite';
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
-import { IActivity } from "@models/Activity";
+import { IActivity } from "src/app/models/Activity";
 import Attendees from "./ActivityListItemAttendees";
 interface ActivityListItemProps {
     activity: IActivity;
@@ -16,11 +16,11 @@ const ActivityListItem: React.FC<ActivityListItemProps> = ({ activity }) => {
             <Segment>
                 <Item.Group>
                     <Item>
-                        <Item.Image size='tiny' circular src={host?.image || `/assets/user.png`} style={{ marginBottom: 3 }} />
+                        <Item.Image size='tiny' circular src={host!.image || `/assets/user.png`} style={{ marginBottom: 3 }} />
                         <Item.Content>
                             <Item.Header as={Link} to={`/activities/${activity.id}`}> {activity.title}</Item.Header>
                             <Item.Description>
-                                Hosted by <Link to={`/profile/${host?.username}`}> {host?.displayName} </Link>
+                                Hosted by <Link to={`/profile/${host!.username}`}> {host!.displayName} </Link>
                             </Item.Description>
                             { activity.isHost && (
                                 <Item.Description>

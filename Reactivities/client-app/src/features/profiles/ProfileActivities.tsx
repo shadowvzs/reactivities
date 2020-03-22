@@ -2,9 +2,9 @@ import React, { useEffect, useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Tab, Grid, Header, Card, Image, TabProps } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { IUserActivity } from '@models/Profile';
+import { IUserActivity } from 'src/app/models/Profile';
 import { format } from 'date-fns';
-import RootStoreContext from "@stores/rootStore";
+import RootStoreContext from "src/app/stores/rootStore";
 
 const panes = [
     { menuItem: 'Future Events', pane: { key: 'futureEvents' } },

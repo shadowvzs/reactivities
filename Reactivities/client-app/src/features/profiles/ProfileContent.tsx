@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tab } from 'semantic-ui-react';
-import { IProfile } from "@models/Profile";
+import { IProfile } from "src/app/models/Profile";
 import ProfileActivities from "./ProfileActivities";
 import ProfilePhone from "./ProfilePhoto";
 import ProfileDescription from "./ProfileDescription";

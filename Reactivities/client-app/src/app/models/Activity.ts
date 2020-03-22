@@ -14,10 +14,10 @@ export interface IActivity {
     isGoing: boolean;
     isHost: boolean;
     attendees: IAttendee[];
-    comments: IComments[];
+    comments: IComment[];
 }
 
-export interface IComments {
+export interface IComment {
     id: string;
     createdAt: Date,
     body: string;

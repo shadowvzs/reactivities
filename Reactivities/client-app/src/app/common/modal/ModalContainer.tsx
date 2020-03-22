@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Modal } from 'semantic-ui-react'
 import { observer } from 'mobx-react-lite';
-import RootStoreContext from "@stores/rootStore";
+import RootStoreContext from "src/app/stores/rootStore";
 
  
 const ModalModalExample = () => {

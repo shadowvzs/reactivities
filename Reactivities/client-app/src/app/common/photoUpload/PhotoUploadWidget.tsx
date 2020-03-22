@@ -21,7 +21,7 @@ export const PhotoUploadWidget: React.FC<IProps> = ({ uploadPhoto, loading }) =>
     useEffect(() => {
         // useEffect executed when dom is already insert so we can revoke the object url at this moment
         files.forEach(file => URL.revokeObjectURL(file.preview))
-    }, files);
+    }, [files]);
 
     return (
         <Grid>

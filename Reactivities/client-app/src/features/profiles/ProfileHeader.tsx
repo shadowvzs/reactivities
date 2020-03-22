@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Segment, Item, Header, Button, Grid, Statistic, Divider, Reveal } from 'semantic-ui-react';
-import { IProfile } from "@models/Profile";
-import RootStoreContext from "@stores/rootStore";
+import { IProfile } from "src/app/models/Profile";
+import RootStoreContext from "src/app/stores/rootStore";
 
 interface IProps {
     profile: IProfile;

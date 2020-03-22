@@ -3,8 +3,8 @@ import { observer } from 'mobx-react-lite';
 import { Segment, Item, Header, Button, Image } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
-import RootStoreContext, { RootStore } from "@stores/rootStore";
-import { IActivity } from "@models/Activity";
+import RootStoreContext, { RootStore } from "src/app/stores//rootStore";
+import { IActivity } from "src/app/models/Activity";
 
 const activityImageStyle = {
     filter: 'brightness(30%)'
@@ -45,7 +45,7 @@ const ActivityDetailedHeader: React.FC<HeaderProps> = ({ activity }) => {
                                 <p>{format(activity.date!, 'eeee do MMMM')}</p>
                                 <p>
                                     Hosted by 
-                                    <Link to={`/profile/${host?.username}`}><strong> {host?.displayName} </strong></Link>
+                                    <Link to={`/profile/${host!.username}`}><strong> {host!.displayName} </strong></Link>
                                 </p>
                             </Item.Content>
                             </Item>
