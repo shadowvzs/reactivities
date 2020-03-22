@@ -5,8 +5,8 @@ import { IProfile, IUserActivity, IPhoto } from "@models/Profile";
 import { history } from "../..";
 import { toast } from "react-toastify";
 
-const API_URL = 'http://172.18.0.2:4999/api';
-export const API_SIGNALR_URL = 'http://172.18.0.2:4999/chat';
+const API_URL = process.env.REACT_APP_API_URL!;
+export const API_SIGNALR_URL = process.env.REACT_APP_API_SIGNALR_URL!;
 
 axios.defaults.baseURL = API_URL;
 
@@ -46,17 +46,16 @@ axios.interceptors.response.use(undefined, error => {
 
 const responseBody = (response: AxiosResponse) => response.data;
 
-const sleep = (ms: number) => (response: AxiosResponse) => new Promise<AxiosResponse>(resolve => setTimeout(() => resolve(response), ms));
-
+// const sleep = (ms: number) => (response: AxiosResponse) => new Promise<AxiosResponse>(resolve => setTimeout(() => resolve(response), ms));
 // how to implement sleep for testing the loader
 // old: get: (url: string) => axios.get(url).then(responseBody),
 // new: get: (url: string) => axios.get(url).then(sleep(3000)).then(responseBody),
 
 const requests = {
-    get: (url: string) => axios.get(url).then(sleep(1000)).then(responseBody),
-    post: (url: string, body: {}) => axios.post(url, body).then(sleep(1000)).then(responseBody),
-    put: (url: string, body: {}) => axios.put(url, body).then(sleep(1000)).then(responseBody),
-    delete: (url: string) => axios.delete(url).then(sleep(1000)).then(responseBody),
+    get: (url: string) => axios.get(url).then(responseBody),
+    post: (url: string, body: {}) => axios.post(url, body).then(responseBody),
+    put: (url: string, body: {}) => axios.put(url, body).then(responseBody),
+    delete: (url: string) => axios.delete(url).then(responseBody),
     postForm: (url: string, file: Blob) => {
         const formData = new FormData();
         formData.append('File', file);
@@ -64,7 +63,7 @@ const requests = {
             headers: {'Content-type': 'multipart/form-data'}
         }).then(responseBody)
     },
-    getWithParams: (url: string, params: URLSearchParams) => axios.get(url,  { params }).then(sleep(1000)).then(responseBody)
+    getWithParams: (url: string, params: URLSearchParams) => axios.get(url,  { params }).then(responseBody)
 };
 
 const activityService = {
