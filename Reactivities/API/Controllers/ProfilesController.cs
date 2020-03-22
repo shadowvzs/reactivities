@@ -3,7 +3,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-
+using System.Collections.Generic;
 namespace API.Controllers
 {
     public class ProfilesController : BaseController
@@ -18,6 +18,12 @@ namespace API.Controllers
         public async Task<ActionResult<Unit>> Edit(Edit.Command command)
         {
             return await Mediator.Send(command);
+        }
+
+        [HttpGet("{username}/activities")]
+        public async Task<ActionResult<List<UserActivityDto>>> GetUserActivities(string username, string predicate)
+        {
+            return await Mediator.Send(new ListActivities.Query{Username = username, Predicate = predicate});
         }        
     }
 }

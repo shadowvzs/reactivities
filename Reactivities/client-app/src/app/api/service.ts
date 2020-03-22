@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { IActivity, IActivitiesEnvelope } from "@models/Activity";
 import { IUser, IUserFormValues } from "@models/User";
-import { IProfile, IPhoto } from "@models/Profile";
+import { IProfile, IUserActivity, IPhoto } from "@models/Profile";
 import { history } from "../..";
 import { toast } from "react-toastify";
 
@@ -88,6 +88,7 @@ const profileService = {
     follow: (username: string) => requests.post(`/profiles/${username}/follow`, {}),
     unfollow: (username: string) => requests.delete(`/profiles/${username}/follow`),
     listFollowings: (username: string, predicate: string): Promise<IProfile[]> => requests.get(`/profiles/${username}/follow?predicate=${predicate}`),
+    listActivities: (username: string, predicate: string): Promise<IUserActivity[]> => requests.get(`/profiles/${username}/activities?predicate=${predicate}`),
 };
 
 

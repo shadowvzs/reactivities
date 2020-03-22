@@ -955,3 +955,16 @@ dotnet ef migrations add "AddedFollowingEntity" -p Persistence/ -s API/
 
 // Step 21: Filter - same like pagination we add additional query params and inject IUserAccessor
 // also we adjust the ActivitiesController.cs - list params
+
+// Step 21: adding activities into user profile which is related with the profile user
+// we create Application/Profiles/UserActivityDto.cs
+//        public Guid Id { get; set; }
+//        public string Title { get; set; }
+//        public string Category { get; set; }
+//        public DateTime Date { get; set; }
+
+// we create ListActivities.cs here to get the activities for profile user - query handler
+// and we extend with new endpoint in ProfilesController.cs
+
+
+

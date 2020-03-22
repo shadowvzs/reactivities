@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tab } from 'semantic-ui-react';
 import { IProfile } from "@models/Profile";
+import ProfileActivities from "./ProfileActivities";
 import ProfilePhone from "./ProfilePhoto";
 import ProfileDescription from "./ProfileDescription";
 import ProfileFollowings from "./ProfileFollowings";
@@ -21,7 +22,7 @@ const panes = [
     },
     {
         menuItem: 'Activities',
-        render: () => <Tab.Pane> Activities content </Tab.Pane>
+        render: () => <ProfileActivities />
     },
     {
         menuItem: 'Followers',
