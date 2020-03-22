@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Grid, Button } from 'semantic-ui-react'
-import ActivityList from './ActivityList';
+import { Grid, Button, Loader } from 'semantic-ui-react'
 import { observer } from 'mobx-react-lite';
 import LoadingComponent from "@layout/LoadingComponent";
 import RootStoreContext from "@stores/rootStore";
 import InfiniteScroll from 'react-infinite-scroller';
+import ActivityList from './ActivityList';
+import ActivityFilters from './ActivityFilters';
 
 const ActivityDashboard = () => {
 
@@ -35,6 +36,12 @@ const ActivityDashboard = () => {
                 >
                     <ActivityList />
                 </InfiniteScroll>
+            </Grid.Column>
+            <Grid.Column width={6}> 
+                <ActivityFilters />
+            </Grid.Column>
+            <Grid.Column width={6}>
+                <Loader active={loadingNext} />
             </Grid.Column>
         </Grid>
     )

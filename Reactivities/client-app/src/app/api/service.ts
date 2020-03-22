@@ -60,10 +60,11 @@ const requests = {
             headers: {'Content-type': 'multipart/form-data'}
         }).then(responseBody)
     },
+    getWithParams: (url: string, params: URLSearchParams) => axios.get(url,  { params }).then(sleep(1000)).then(responseBody)
 };
 
 const activityService = {
-    list: (limit?: number, page?: number): Promise<IActivitiesEnvelope> => requests.get(`/activities?limit=${limit}&offset=${page ? page * limit! : 0}`),
+    list: (params: URLSearchParams): Promise<IActivitiesEnvelope> => requests.getWithParams('/activities', params),
     details: (id: string) => requests.get(`/activities/${id}`),
     create: (activity: IActivity) => requests.post(`/activities`, activity),
     update: (activity: IActivity) => requests.put(`/activities/${activity.id}`, activity),

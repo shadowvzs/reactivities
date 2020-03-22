@@ -21,7 +21,7 @@ const ActivityList = () => {
                         { activities.map(x => <ActivityListItem key={x.id} activity={x} /> )}
                     </Item.Group>
                 </React.Fragment>
-            ))};
+            ))}
         </>
     );
 };

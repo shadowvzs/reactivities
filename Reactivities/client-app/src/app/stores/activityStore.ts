@@ -1,4 +1,4 @@
-import { observable, action, computed, runInAction } from 'mobx';
+import { observable, action, computed, runInAction, reaction } from 'mobx';
 import services, { API_SIGNALR_URL } from "@service";
 import { IActivity, IActivitiesEnvelope } from '@models/Activity';
 import { v4 as uuid } from "uuid";
@@ -16,6 +16,12 @@ export default class ActivityStore {
 
     constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
+
+        reaction(() => this.predicate.keys(), () => {
+            this.page = 0;
+            this,this.activityRegistry.clear();
+            this.loadActivities();
+        });
     }
 
     @observable activityRegistry = new Map();
@@ -27,6 +33,28 @@ export default class ActivityStore {
     @observable.ref hubConnection: HubConnection | null = null;  // not make deep sub prop checking
     @observable activityCount = 0;
     @observable page = 0;
+    @observable predicate = new Map();
+
+    @action setPredicate = (predicate: string, value: string | Date) => {
+        this.predicate.clear();
+        if (predicate !== 'all') {
+            this.predicate.set(predicate, value);
+        }
+    }
+
+    @computed get axiosParams() {
+        const params = new URLSearchParams();
+        params.append('limit', String(LIMIT));
+        params.append('offset', `${this.page ? this.page * LIMIT : 0}`);
+        this.predicate.forEach((value, key) => {
+            if (key === 'startDate') {
+                params.append(key, value.toISOString());
+            } else {
+                params.append(key, value);
+            }
+        })
+        return params;
+    }
 
     @computed get totalPages() {
         return Math.ceil(this.activityCount / LIMIT);
@@ -104,7 +132,7 @@ export default class ActivityStore {
     @action loadActivities = async () => {
         this.loadingInitial = true;
         try {
-            const { activities, activityCount } = await services.activity.list(LIMIT, this.page);
+            const { activities, activityCount } = await services.activity.list(this.axiosParams);
             // we should add string for 1st param because should be testable easier with mobx devtool
             // since await use promise then in behind we must run every observable changes in runInAction, before await it is ok
             runInAction('loading activities', () => {
