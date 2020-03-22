@@ -948,3 +948,10 @@ dotnet ef migrations add "AddedFollowingEntity" -p Persistence/ -s API/
 //        .Skip(request.Offset ?? 0)
 //        .Take(request.Limit ?? 3)
 //        .ToLostAsync();
+
+
+// Step 21: Pagination - refactor activities List.cs handle for pagination support 
+// change the ActivitiesController.cs - List too
+
+// Step 21: Filter - same like pagination we add additional query params and inject IUserAccessor
+// also we adjust the ActivitiesController.cs - list params

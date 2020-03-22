@@ -2,7 +2,7 @@
 # just set few variable
 HOST_BASE_DIR=$PWD
 HOST_PROJECT_DIR="Reactivities"
-DOCKER_PROJECT_DIR="/home/shared/Reactivities"
+DOCKER_PROJECT_DIR="/home"
 DS="/"
 HOST_FULL_PATH="$HOST_BASE_DIR$DS$HOST_PROJECT_DIR"
 EXPOSED_PORTS="5000:5000"
