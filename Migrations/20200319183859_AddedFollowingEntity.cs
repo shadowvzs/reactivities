@@ -10,8 +10,8 @@ namespace Persistence.Migrations
                 name: "Followings",
                 columns: table => new
                 {
-                    ObserverId = table.Column<string>(nullable: false),
-                    TargetId = table.Column<string>(nullable: false)
+                    ObserverId = table.Column<string>(type: "nvarchar(64)", nullable: false),
+                    TargetId = table.Column<string>(type: "nvarchar(64)", nullable: false)
                 },
                 constraints: table =>
                 {

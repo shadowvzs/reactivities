@@ -49,7 +49,7 @@ namespace Application.Comments
                     Author = user,
                     Activity = activity,
                     Body = request.Body,
-                    CreatedAt = DateTime.Now
+                    // CreatedAt = null DateTime.Now
                 };
 
                 activity.Comments.Add(comment);

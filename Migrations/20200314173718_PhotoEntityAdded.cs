@@ -6,11 +6,6 @@ namespace Persistence.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "isHost",
-                table: "UserActivities",
-                newName: "IsHost");
-
             migrationBuilder.AddColumn<string>(
                 name: "Bio",
                 table: "AspNetUsers",
@@ -20,10 +15,10 @@ namespace Persistence.Migrations
                 name: "Photos",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(64)", nullable: false),
                     Url = table.Column<string>(nullable: true),
-                    isMain = table.Column<bool>(nullable: false),
-                    AppUserId = table.Column<string>(nullable: true)
+                    IsMain = table.Column<bool>(nullable: false),
+                    AppUserId = table.Column<string>(type: "nvarchar(64)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -50,11 +45,6 @@ namespace Persistence.Migrations
             migrationBuilder.DropColumn(
                 name: "Bio",
                 table: "AspNetUsers");
-
-            migrationBuilder.RenameColumn(
-                name: "IsHost",
-                table: "UserActivities",
-                newName: "isHost");
         }
     }
 }

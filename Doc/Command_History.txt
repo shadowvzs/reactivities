@@ -971,3 +971,87 @@ dotnet ef migrations add "AddedFollowingEntity" -p Persistence/ -s API/
 //                        ClockSkew = TimeSpan.Zero
 // and this to Cors policy
 //                        .WithExposeHeaders("WWW-Authenticate")
+
+// Step 22: CLIENT HOSTING WITH DOTNET - serve built react app with dotnet
+// add middleware for serving static files into Startup.cs - before app.UseRouting();
+//    app.UseDefaultFiles();
+//    app.UseStaticFiles();
+// we must create a route aswell, if the url doesnt match any of our controller so we must add like last thing into UseEndpoints scope
+//    endpoints.MapFallbackToController("Index", "Fallback");
+// then we must create controller which handle this new endpoints - Api/Controllers/FallbackController.cs
+// using System.IO;
+// using Microsoft.AspNetCore.Mvc;
+// using Microsoft.AspNetCore.Authorization;
+// namespace API.Controllers
+// {
+//    public class FallbackController : Controller
+//    {
+//        [AllowAnonymous]
+//
+//         public IActionResult Index()
+//         {
+//             return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "wwwwroot", "index.html"), "text/HTML");
+//         }
+//     }
+// }
+
+// STEP 22 - Replace MySQL Lite to MySQL 
+// we install MySQL 
+// we login and CREATE USER for our app
+CREATE USER 'appuser'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Pa$$w0rd';
+GRANT ALL PRIVILEGES ON *.* TO 'appuser'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+// Note: we can browser and connect to mysql from visual studio code with MYSQL plugin if in command palette we choose Add Mysql connection
+
+// Add MySQL Driver for entity framework with nuget package manager, and we install into Persistence (2 package)
+// Microsoft.EntityFrameworkCore.SqlServer (3.0)
+// Pomelo.EntityFrameworkCore.Mysql
+
+// Make migrations compatible with mysql server and not sqllite - we got only issue with InitCreate migration with this line:
+//      Id = table.Column<int>(nullable: false).Annotation("Sqlite:Autoincrement", true),
+// --- we must import Microsoft.EntityFrameworkCore.Metadata; and we make workable for both cases
+//      Id = table.Column<int>(nullable: false)
+//            .Annotation("Mysql:ValueGenerationStrategy", MysqlValueGenerationStrategy.IdentityColumn)
+//            .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
+//            .Annotation("Sqlite:Autoincrement", true),
+
+// move ConnectionStrings from appsettings.json => appsettings.Development.json, and we use mysql settings in appsettings.json
+//    "ConnectionStrings": {
+//        "DefaultConnection": "Data source=reactivities.db"
+//    },
+//    "ConnectionStrings": {
+//        "DefaultConnection": "Server=localhost; Database=reactivities; Uid=appuser; Pwd=Pa$$w0rd"
+//    },
+
+// Step 22: Separate development configuration services and production 
+
+//        public void ConfigureDevelopmentServices(IServiceCollection services)
+//        {
+//            services.AddDbContext<DataContext>(opt => 
+//            {
+//                opt.UseLazyLoadingProxies();
+//                opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+//            });
+//            ConfigureServices(services);
+//        }
+
+//        public void ConfigureProductionServices(IServiceCollection services)
+//        {
+//            services.AddDbContext<DataContext>(opt => 
+//            {
+//                opt.UseLazyLoadingProxies();
+//                opt.UseMysql(Configuration.GetConnectionString("DefaultConnection"));
+//            });
+//            ConfigureServices(services);
+//        }
+
+// Step 22: API to PRODUCTION
+// API/Properties/launchSettings.json - API
+//     "ASPNETCORE_ENVIRONMENTL": "Development" // we change to Production
+
+// in production mode the secrets not work so we must list them and insert into appsettings.json
+dotnet user-secrets list
+
+// DATABASE migration issue with Id and other idnexed field which got TEXT/GUID or Blob type
+// ex.: UserId = table.Column<string>(nullable: false) => UserId = table.Column<string>(type: "nvarchar(64)", nullable: false),

@@ -7,7 +7,7 @@ import ModalStore from './modalStore';
 import ProfileStore from './profileStore';
 
 // add strict mode
-configure({ enforceActions: true });
+configure({ enforceActions: 'always' });
 
 export class RootStore {
     activityStore: ActivityStore;

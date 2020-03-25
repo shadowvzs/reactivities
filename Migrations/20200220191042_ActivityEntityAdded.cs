@@ -11,7 +11,7 @@ namespace Persistence.Migrations
                 name: "Activities",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
+                    Id = table.Column<Guid>(type: "nvarchar(64)", nullable: false),
                     Title = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Category = table.Column<string>(nullable: true),

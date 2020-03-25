@@ -7,19 +7,14 @@ namespace Persistence.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "isMain",
-                table: "Photos",
-                newName: "IsMain");
-
             migrationBuilder.CreateTable(
                 name: "Comments",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
+                    Id = table.Column<Guid>(type: "nvarchar(64)", nullable: false),
                     Body = table.Column<string>(nullable: true),
-                    AuthorId = table.Column<string>(nullable: true),
-                    ActivityId = table.Column<Guid>(nullable: true),
+                    AuthorId = table.Column<string>(type: "nvarchar(64)", nullable: true),
+                    ActivityId = table.Column<Guid>(type: "nvarchar(64)", nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -54,11 +49,6 @@ namespace Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Comments");
-
-            migrationBuilder.RenameColumn(
-                name: "IsMain",
-                table: "Photos",
-                newName: "isMain");
         }
     }
 }

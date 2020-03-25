@@ -8,3 +8,5 @@
 .DS_Store
 appsettings.json
 *.db
+**/wwwroot/*
+**/build/*
