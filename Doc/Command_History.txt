@@ -1002,6 +1002,12 @@ CREATE USER 'appuser'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Pa$$
 GRANT ALL PRIVILEGES ON *.* TO 'appuser'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 
+// on digital ocean
+CREATE USER 'appuser'@'localhost' IDENTIFIED BY 'Pa$$w0rd';
+GRANT ALL PRIVILEGES ON *.* TO 'appuser'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+
 // Note: we can browser and connect to mysql from visual studio code with MYSQL plugin if in command palette we choose Add Mysql connection
 
 // Add MySQL Driver for entity framework with nuget package manager, and we install into Persistence (2 package)
@@ -1049,9 +1055,271 @@ FLUSH PRIVILEGES;
 // Step 22: API to PRODUCTION
 // API/Properties/launchSettings.json - API
 //     "ASPNETCORE_ENVIRONMENTL": "Development" // we change to Production
+// NOOOTEEE: dont forget to add enviroment variable to os:
+export ASPNETCORE_ENVIRONMENT=Production
+
 
 // in production mode the secrets not work so we must list them and insert into appsettings.json
 dotnet user-secrets list
 
 // DATABASE migration issue with Id and other idnexed field which got TEXT/GUID or Blob type
 // ex.: UserId = table.Column<string>(nullable: false) => UserId = table.Column<string>(type: "nvarchar(64)", nullable: false),
+
+
+// PUBLISH to DigitalOcean - (w gitHub) - cloud.digitalocean.com
+// We create a Droplet (server) and we select the following things:
+//      Distribution: ubuntu 18.04
+//     Market place Lamp on 18.04 -> Details -> Configure Lamp Project 
+//                 - we choose the cheapest option (5$)
+//                 - Frankfurt datacenter
+//                 - Authentication - One-time password
+//                 - Set hostname: Reactivities-Demo
+// Create New Droplet
+
+// After it was created we can copy the ip: 165.22.84.244
+
+// Create password
+// We create ssh key with: 
+ssh root@165.22.84.244
+//     we must give a password, what we got from digital ocean in email: 3947101d8ce524fdfb263f2491
+//     then we must provide a password for linux too: Pa$$w0rd
+
+// we can get the password with following command:
+cat /root/.digitalocean_password
+// we get root_mysql_pass="735d9de05081b286ac38b53edbc0672ee06c7709cee9afc0"
+
+// then we log to mysql with this password
+mysql -uroot -p
+
+// we add app user
+CREATE USER 'appuser'@'localhost' IDENTIFIED BY 'Pa$$w0rd';
+GRANT ALL PRIVILEGES ON *.* TO 'appuser'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+quit
+
+// we need install dotnet to droplet with tutiroal from ms: https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1804
+// we register ms key/download and install the package
+wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+
+// we isntall the runtime
+sudo add-apt-repository universe &&
+sudo apt-get update &&
+sudo apt-get install apt-transport-https &&
+sudo apt-get update &&
+sudo apt-get install dotnet-sdk-3.1
+
+// we must enable the following apache modules:
+a2enmod proxy proxy_http proxy_html rewrite
+systemctl restart apache2
+
+// we must configure the virtualk host for apache2
+
+sudo nano /etc/apache2/sites-available/reactivities.conf
+
+<VirtualHost *:80>
+ProxyPreserveHost On
+ProxyPass / http://127.0.0.1:5000/
+ProxyPassReverse / http://127.0.0.1:5000/
+
+ErrorLog /var/log/apache2/reactivities-error.log
+CustomLog /var/log/apache2/reactivities-access.log common
+
+RewriteEngine on
+RewriteCond %{HTTP:UPGRADE} ^WebSocket$ [NC]
+RewriteCond %{HTTP:CONNECTION} Upgrade$ [NC]
+RewriteRule /(.*) ws://127.0.0.1:5000/$1 [P]
+
+</VirtualHost>
+
+// enable the new virtualhost
+a2ensite reactivities
+a2dissite 000-default
+systemctl reload apache2
+
+// we install the Deploy (Reloaded) extension for visual studio code which help to transfer files
+// copy the below things into settings.json file in the .vscode folder (in my case it is in udemy/project/.vscode) and add the following:
+// note it will publish to /var/reactivities/publish/Reactivities instead of /var/reactivities so we should move everything to right place
+// ** note replace the ip, password, verify if folder path for publish folder is correct **
+
+{
+    "deploy.reloaded": {
+        "packages": [
+            {
+                "name": "Version 1.0.0",
+                "description": "Package version 1.0.0",
+
+                "files": [
+                    "publish/**"
+                ]
+            }
+        ],
+
+        "targets": [
+            {
+                "type": "sftp",
+                "name": "Linux",
+                "description": "SFTP folder",
+
+                "host": "165.22.134.96", "port": 22,
+                "user": "root", "password": "yourpassword",
+
+                "dir": "/var/reactivities",
+                "mappings": {
+                    "api/publish/**": "/"
+                }
+            }
+        ]
+    }
+}
+
+// Publish the dotnet application (it is create a new folder (publish) and copy there every thing in compiled form)
+// Note: --self-contained mean we will move somewhere where also have dotnet core isntalled and dont need to compile base thing because we will use them from target server
+dotnet publish -c Release -o publish --self-contained false Reactivities.sln
+
+// add following thing to every .csproj file
+// <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+// in vsc - command pallette - Deploy Reaload - Deploy and select Package and should be the uploaded the publish folder to server
+// the files should be in oceancloud server at /var/reactivities
+
+// Add kestral web service (create file and copy the config from below - just we must change the cloudinary credentials)
+sudo nano /etc/systemd/system/kestrel-web.service
+
+[Unit]
+Description=Kestrel service running on Ubuntu 18.04
+[Service]
+WorkingDirectory=/var/reactivities
+ExecStart=/usr/bin/dotnet /var/reactivities/API.dll
+Restart=always
+RestartSec=10
+SyslogIdentifier=reactivities
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment='Cloudinary__CloudName=digua6bil'
+Environment='Cloudinary__ApiSecret=oqP4cDzpdaKG4Zf8qBxHQB2xIjI'
+Environment='Cloudinary__ApiKey=269272975632736'
+Environment='TokenKey=super secret key'
+[Install]
+WantedBy=multi-user.target
+
+// enable and start our new service
+sudo systemctl enable kestrel-web.service
+sudo systemctl start kestrel-web.service
+
+// we can check the if dotnet have listener for port 5000
+netstat -ntpl
+
+// NOTE - ketral running issue - fotnet not listened to port 5000
+// we should get error if we try run API manually (dotnet API.dll)
+// Unhandled exception. System.IO.FileLoadException: Could not load file or assembly 'Microsoft.EntityFrameworkCore, 
+// Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60'. The located assembly's manifest definition does not match 
+// the assembly reference. (0x80131040)
+// File name: 'Microsoft.EntityFrameworkCore, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60'
+// --- solution was changing the entity framework version and rebuild it (also used same version then at dotnet tool ef)
+
+// list the virtual hosts
+apache2ctl -S
+
+// we should enable the ssl and restart
+sudo a2enmod ssl
+systemctl restart apache2
+
+// we check our apache settings with 
+cat /etc/apache2/sites-enabled/reactivities.conf
+
+// at Neil the following is different
+// ServerName reactivities.trycatchlearn.com
+// RedirectMatch permanent ^(.*)$ https://reactivities.trycatchlearn.com$1
+
+// and Neil also got this cat - /etc/apache2/sites-enabled/reactivities-ssl.conf
+<VirtualHost *:443>
+ServerName reactivities.trycatchlearn.com
+
+SSLEngine on
+SSLCertificateFile /etc/ssl/trycatchlearn_com.crt
+SSLCertificateKeyFile /etc/ssl/private/trycatchlearn.key
+SSLCertificateChainFile /etc/ssl/trycatchlearn_com.ca-bundle
+
+ProxyPreserveHost On
+ProxyPass / http://127.0.0.1:5000/
+ProxyPassReverse / http://127.0.0.1:5000/
+
+ErrorLog /var/log/apache2/reactivities-error.log
+CustomLog /var/log/apache2/reactivities-access.log common
+
+RewriteEngine on
+RewriteCond %{HTTP:UPGRADE} ^WebSocket$ [NC]
+RewriteCond %{HTTP:CONNECTION} Upgrade$ [NC]
+RewriteRule /(.*) ws://127.0.0.1:5000/$1 [P]
+
+</VirtualHost>
+
+// create a certificate sitename 
+// this create 2 file: certificate signin/private key and certificate signing request itself)
+openssl req -new -newkey rsa:2048 -nodes -keyout sitename.key -out sitename.csr
+// Need add: 
+//        Country code (GB)
+//        State (London)
+//        Locality name (London)
+//        Organization Name (IT)
+//        Organization Unit name (IT)
+//        Common Name (site name): sitename.com
+//        Email addres: bob@test.com
+//        Challenge password: Pa$$w0rd
+//        Otional Company name: Reactivities
+// output: sitename.csr, sitename.key, trycatchlearn.csr
+
+// we go to this site for test the security header issues
+// https://securityheaders.com
+
+// Step 22: FIXING SECURITy HEADER ISSUES
+
+// FIXING: X-Content-Type-Options, Referrer-Policy, X-Frame-Options, Content-Security-Policy
+// we go to Program.cs - we add after webBuilder
+//                    webBuilder
+//                        .UseKestrel(x => x.AddServerHeader = false)
+//                        .UseStartup<Startup>();
+// We must install NWebsec.AspNetCore.Middleware package to api with latest version
+// then if we installed and restored then we must inject the security header into Startup.cs, above the app.UserDefaultFiles();
+// app.UseXContentTypeOptions();
+// app.UseReferrerPolicy(opt => opt.NoReferrer());
+// app.UseXXssProtection(opt => opt.EnabledWithBlockMode());
+// app.UseXfo(opt => opt.Deny());
+// app.UseCspReportOnly(opt => opt
+//                 .BlockAllMixedContent()
+//                 .StyleSources(s => s.Self())
+//                 .FontSources(s => s.Self())
+//                 .FormActions(s => s.Self())
+//                 .FrameAncestors(s => s.Self())
+//                 .ImageSources(s => s.Self())
+//                 .ScriptSources(s => s.Self())
+// );
+// Above policies also enable console errors in console about policy issues
+
+// example inline script is fobidden (script without src just code between tags)
+// we need to use sha- key for solve the "Refuse to execute inline script ..." errors
+
+// FIXING the console policy ERRORS
+// where we imported directly from cdn the semantic.min.css we must replace it with package
+// so we install with npm the semantic-ui-css package
+
+// ADD resource/assets to white list
+// We go to Startup.cs and at .StyleSources(s => s.Self()) we inject the other outside url which is safe
+// .StyleSources(s => s.Self()) =======> .StyleSources(s => s.Self().CustomSources("https://fonts.googleapis.com"))
+// .FontSources(s => s.Self()) ========> .FontSources(s => s.Self().CustomSources("https://fonts.gstatic.com", "data:"))
+// .ImageSources(s => s.Self()) =======> .ImageSources(s => s.Self().CustomSources("https://res.cloudinary.com", "data:"))
+// Note1: same way we can add hash with sha256 instead of url for the style/scripts
+// Note2: above solution not work for inline things like <div style=".."> ... </div> in index.html, we should use class here
+
+// https://fonts.gstatic.com/s/
+// https://fonts.googleapis.com/css
+
+// Force useage of HTTPS need in Startup.cs to enab;e the app.UseHsts();
+// Apache need to enable headers
+a2enmod headers
+systemctrl restart apache2
+// and in apache configureation (reactivities-ssl.conf) must have the following thing, expiration date (1year - recommended) for security header
+// Header always set Strict-Transport-Security "max-age-31536000; includeSubDomains"
+)
+

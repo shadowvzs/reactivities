@@ -10,3 +10,4 @@ appsettings.json
 *.db
 **/wwwroot/*
 **/build/*
+publish

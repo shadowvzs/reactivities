@@ -25,7 +25,7 @@ const ProfileEditForm: React.FC<IProps> = ({ profile, updateProfile }) => {
             initialValues={profile}
             render={({ handleSubmit, submitting, invalid, pristine }) => (
                 <Form onSubmit={handleSubmit} error>
-                    <Header as='h2' content='Login to Reactivities' color='teal' textAlign='center' />
+                    <Header as='h2' content='Profile Information' color='teal' textAlign='center' />
                     <Field 
                         name='displayName' 
                         placeholder='Display Name' 
