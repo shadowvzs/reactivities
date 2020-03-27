@@ -1323,3 +1323,43 @@ systemctrl restart apache2
 // Header always set Strict-Transport-Security "max-age-31536000; includeSubDomains"
 )
 
+
+// DEPLOY TO AZURE
+// if we register to azure then we must go to portal.azure.com
+// then to resouce group 
+// create resouce group (able to delete everything project related) reactivitiesResourceGroup - review and create 
+// we select our create resource group and click to add resource and select "Web App + MySQL" and create
+// we must complete few field like: 
+//       App name: reactivities2 (it will be reactivities1.azurewebsite.net)
+//       Resourgroup - we select the existing
+//       App service plan/Location - click there and create new -> change pricing tier to free (Dev / Test) - app Service Plan name: reactivitiesAppService1
+//       Database: We create new database:
+//                          servername: reactivities1-mysqldbserver
+//                          server admin login name: mysqldbuser
+//                          password: Pa$$w0rd
+//                          free pricing tier
+//                          application insight
+// then we select dotnet core recommended and click to apply
+// and create --- when it is created then we go again to resource group
+
+// we go to the sql server - firewall settings and copy the client ip address and add below the ip to whitelist and we Save
+// we go back to the resource group and to the App Service (App service is the type name at the resource group overview page)
+//       there will be URL: which is our project url
+// we go back to resource group and select database and (ADO.NET) "show database connection strings"  and we copy it
+//     and we pase this to appsettings.json/DefaultConnection (just need to replace the user id and password placeholder)
+// we need replace UserMysql to UserSqlServer in the Startup.cs and we start it (we can use locally with azure db)
+// we go to azure portal - resource group - sql database - query editor (need login) - we can check out tables
+
+// DEPLOY FROM VSC
+// We need to install in vsc the Azure App Service 
+//      - after it is isntalled we click to left sidebar the new azure icon and we sign in into azure
+//      - we rebuild and use publish command
+//      - after we are logged in we go to /Files and at topbar "Upload to Web App" and we browse our publish folder
+//      - now after it was uploaded we should reload the azure project URL
+
+// we go back to portal - app service - settings/Configuration - edit our default connection string and insert here from the appSettings.json (but must be sure the setting name is uppercased DefaultConnection)
+// we also can see from VSC the Application Settings and with right-click we have option for "Add New Setting"
+//        we add Cloudinary settings and TokenKey
+//        and we can remove the connection string and other settings from appSettings.json (we leave only the Logging and AllowedHosts)
+// In start up class uncomment the app.UseHsts();
+// we rebuild and publish and upload again
